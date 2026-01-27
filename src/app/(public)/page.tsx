@@ -3,6 +3,9 @@ import prisma from "@/lib/prisma";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Github } from "lucide-react";
+import type { Project, Repository } from "@prisma/client";
+
+type ProjectWithRepositories = Project & { repositories: Repository[] };
 
 // ビルド時ではなくリクエスト時にデータベースアクセスする（Vercelビルド環境からDB接続できないため）
 export const dynamic = "force-dynamic";
@@ -33,7 +36,7 @@ export default async function Home() {
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project) => (
+          {(projects as ProjectWithRepositories[]).map((project) => (
             <Card key={project.id} className="flex flex-col h-full hover:shadow-lg transition-all duration-300 border-t-4 border-t-primary">
               <CardHeader>
                 <CardTitle className="flex justify-between items-start gap-2">
