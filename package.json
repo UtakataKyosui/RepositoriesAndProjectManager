@@ -3,13 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "dotenvx run -- next dev",
-    "build": "dotenvx run -f .env.production.encrypted -- next build",
-    "start": "dotenvx run -f .env.production.encrypted -- next start",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "test": "dotenvx run -- vitest",
-    "postinstall": "prisma generate"
+    "test": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

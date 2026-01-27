@@ -38,7 +38,7 @@ yarn-error.log*
 .env.keys
 .env.local
 .env.*.local
-!.env.production.encrypted
+.env.production*
 
 
 # vercel
