@@ -1,8 +1,0 @@
-{
-    "buildCommand": "dotenvx run -- next build",
-    "installCommand": "pnpm install",
-    "framework": "nextjs",
-    "env": {
-        "DOTENV_PRIVATE_KEY": "@dotenv_private_key"
-    }
-}
