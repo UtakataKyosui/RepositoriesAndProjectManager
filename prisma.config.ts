@@ -7,6 +7,6 @@ dotenvx.config();
 export default defineConfig({
     schema: 'prisma/schema.prisma',
     datasource: {
-        url: dotenvx.get('DATABASE_URL') || env('DATABASE_URL'),
+        url: env('DATABASE_URL'),
     },
 });
