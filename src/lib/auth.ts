@@ -8,9 +8,6 @@ export const auth = betterAuth({
         provider: "postgresql",
     }),
     baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
-    trustedOrigins: process.env.NEXT_PUBLIC_BETTER_AUTH_URL !== "http://localhost:3000"
-        ? [process.env.NEXT_PUBLIC_BETTER_AUTH_URL!]
-        : ["http://localhost:3000"],
     socialProviders: {
         github: {
             clientId: env.GITHUB_CLIENT_ID,
