@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Github } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const projects = await prisma.project.findMany({
     where: {
