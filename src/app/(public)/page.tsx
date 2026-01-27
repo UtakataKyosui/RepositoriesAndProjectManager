@@ -4,7 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Github } from "lucide-react";
 
-export const revalidate = 60;
+// ビルド時ではなくリクエスト時にデータベースアクセスする（Vercelビルド環境からDB接続できないため）
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export default async function Home() {
   const projects = await prisma.project.findMany({
