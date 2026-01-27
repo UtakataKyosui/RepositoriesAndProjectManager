@@ -1,19 +1,26 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import dotenvx from "@dotenvx/dotenvx";
 import prisma from "./prisma";
+
+dotenvx.config();
+
+const betterAuthUrl = dotenvx.get("BETTER_AUTH_URL") || "http://localhost:3000";
+const githubClientId = dotenvx.get("GITHUB_CLIENT_ID") || "";
+const githubClientSecret = dotenvx.get("GITHUB_CLIENT_SECRET") || "";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
-    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-    trustedOrigins: process.env.BETTER_AUTH_URL
-        ? [process.env.BETTER_AUTH_URL]
+    baseURL: betterAuthUrl,
+    trustedOrigins: betterAuthUrl !== "http://localhost:3000"
+        ? [betterAuthUrl]
         : ["http://localhost:3000"],
     socialProviders: {
         github: {
-            clientId: process.env.GITHUB_CLIENT_ID as string,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+            clientId: githubClientId,
+            clientSecret: githubClientSecret,
         },
     },
 });
