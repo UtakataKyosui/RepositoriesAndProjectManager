@@ -11,8 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { getSession } from "@/lib/session"
 import { redirect } from "next/navigation"
 
 export default async function AdminLayout({
@@ -20,9 +19,7 @@ export default async function AdminLayout({
 }: {
     children: React.ReactNode
 }) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    })
+    const session = await getSession()
 
     if (!session) {
         redirect("/")

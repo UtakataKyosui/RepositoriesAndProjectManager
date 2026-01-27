@@ -1,12 +1,10 @@
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { Pool } from 'pg'
-import dotenvx from '@dotenvx/dotenvx'
-
-dotenvx.config();
+import { env } from './env'
 
 const prismaClientSingleton = () => {
-    const connectionString = dotenvx.get('DATABASE_URL') || ''
+    const connectionString = env.DATABASE_URL
 
     // Handle pg-connection-string security warning by explicit setting
     // The warning states 'require', 'prefer', 'verify-ca' are aliases for 'verify-full' in current pg versions
@@ -38,4 +36,4 @@ const prisma = globalThis.prismaGlobal ?? prismaClientSingleton()
 
 export default prisma
 
-if (dotenvx.get('NODE_ENV') !== 'production') globalThis.prismaGlobal = prisma
+if (env.NODE_ENV !== 'production') globalThis.prismaGlobal = prisma
