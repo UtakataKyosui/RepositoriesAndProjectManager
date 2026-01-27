@@ -1,5 +1,5 @@
 {
-    "buildCommand": "pnpm build",
+    "buildCommand": "dotenvx run -- next build",
     "installCommand": "pnpm install",
     "framework": "nextjs",
     "env": {
