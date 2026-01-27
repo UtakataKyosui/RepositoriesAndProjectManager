@@ -13,7 +13,7 @@ export default function SignInButton() {
         setLoading(true);
         await authClient.signIn.social({
             provider: "github",
-            callbackURL: "/admin",
+            callbackURL: "/admin"
         }, {
             onSuccess: () => {
                 setLoading(false);
