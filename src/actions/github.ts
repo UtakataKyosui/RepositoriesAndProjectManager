@@ -1,7 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getSession } from "@/lib/session";
 import prisma from "@/lib/prisma";
 
 export type GitHubRepo = {
@@ -14,9 +13,7 @@ export type GitHubRepo = {
 };
 
 export async function getMyRepositories(): Promise<GitHubRepo[]> {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    const session = await getSession();
 
     if (!session) {
         throw new Error("Unauthorized");

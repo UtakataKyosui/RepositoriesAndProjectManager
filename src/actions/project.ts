@@ -1,7 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getSession } from "@/lib/session";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
@@ -16,9 +15,7 @@ type CreateProjectInput = {
 };
 
 export async function createProject(input: CreateProjectInput) {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    const session = await getSession();
 
     if (!session) {
         throw new Error("Unauthorized");

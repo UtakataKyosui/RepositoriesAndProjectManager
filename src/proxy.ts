@@ -1,13 +1,22 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 export async function proxy(request: NextRequest) {
-    const sessionCookie = request.cookies.get("better-auth.session_token");
-    if (!sessionCookie && request.nextUrl.pathname.startsWith("/admin")) {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    // THIS IS NOT SECURE!
+    // This is the recommended approach to optimistically redirect users
+    // We recommend handling auth checks in each page/route
+    if (!session) {
         return NextResponse.redirect(new URL("/", request.url));
     }
+
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ["/admin/:path*"],
+    matcher: ["/admin(.*)"],
 };
