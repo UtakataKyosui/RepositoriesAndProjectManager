@@ -51,7 +51,7 @@ export async function createProject(input: CreateProjectInput) {
           name: repo.name,
         })),
       },
-      dependencies: {
+      dependents: {
         create: input.dependencyIds?.map((id) => ({
           dependencyId: id,
         })),
@@ -97,7 +97,7 @@ export async function updateProject(
           name: repo.name,
         })),
       },
-      dependencies: {
+      dependents: {
         deleteMany: {}, // 既存の依存関係を削除
         create: input.dependencyIds?.map((id) => ({
           dependencyId: id,

@@ -1,4 +1,9 @@
-import { ArrowLeft, ExternalLink, Github } from "lucide-react";
+import {
+  ArrowLeft,
+  ExternalLink,
+  Github,
+  Link as LinkIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { type GitHubCommit, getRepositoryCommits } from "@/actions/github";
@@ -24,6 +29,16 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     },
     include: {
       repositories: true,
+      dependencies: {
+        include: {
+          dependency: true,
+        },
+      },
+      dependents: {
+        include: {
+          dependent: true,
+        },
+      },
     },
   });
 
@@ -142,6 +157,69 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             </div>
           </div>
         </div>
+        {/* Dependencies Section (Depends on - 自分が依存している) */}
+        {project.dependents.length > 0 && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LinkIcon className="h-5 w-5" />
+                Depends on ({project.dependents.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                {project.dependents.map((dep) => (
+                  <Link
+                    key={dep.dependencyId}
+                    href={`/projects/${dep.dependencyId}`}
+                    className="block"
+                  >
+                    <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <p className="font-medium">{dep.dependency.title}</p>
+                      {dep.dependency.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {dep.dependency.description}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Dependents Section (Used by - 自分に依存している) */}
+        {project.dependencies.length > 0 && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LinkIcon className="h-5 w-5 rotate-90" />
+                Used by ({project.dependencies.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 md:grid-cols-2">
+                {project.dependencies.map((dep) => (
+                  <Link
+                    key={dep.dependentId}
+                    href={`/projects/${dep.dependentId}`}
+                    className="block"
+                  >
+                    <div className="p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <p className="font-medium">{dep.dependent.title}</p>
+                      {dep.dependent.description && (
+                        <p className="text-sm text-muted-foreground line-clamp-1">
+                          {dep.dependent.description}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );

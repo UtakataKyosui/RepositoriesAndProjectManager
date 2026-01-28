@@ -51,7 +51,7 @@ export default async function EditProjectPage({ params }: PageProps) {
             url: r.url,
             name: r.name ?? "",
           })),
-          dependencies: project.dependencies.map((d) => ({
+          dependencies: project.dependents.map((d) => ({
             dependencyId: d.dependencyId,
           })),
         }}
