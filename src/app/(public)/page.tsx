@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import prisma from "@/lib/prisma";
+import { formatRepositoryName } from "@/lib/utils";
 
 type ProjectWithRepositories = Project & { repositories: Repository[] };
 
@@ -79,7 +80,7 @@ export default async function Home() {
                           className="hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer flex items-center gap-1 py-1"
                         >
                           <Github className="h-3 w-3" />
-                          {repo.name || "Repo"}
+                          {formatRepositoryName(repo.name || "") || "Repo"}
                         </Badge>
                       </Link>
                     ))}

@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prisma from "@/lib/prisma";
+import { formatRepositoryName } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -121,7 +122,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                               <div className="flex items-center gap-3">
                                 <Github className="h-5 w-5 text-muted-foreground" />
                                 <div>
-                                  <p className="font-medium">{repo.name}</p>
+                                  <p className="font-medium">
+                                    {formatRepositoryName(repo.name || "")}
+                                  </p>
                                   <p className="text-sm text-muted-foreground">
                                     {repo.url}
                                   </p>
