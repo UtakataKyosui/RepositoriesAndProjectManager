@@ -2,7 +2,6 @@
 
 import {
   Background,
-  ConnectionLineType,
   Controls,
   type Edge,
   MarkerType,
@@ -16,6 +15,7 @@ import {
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import "@xyflow/react/dist/style.css";
+import ELK from "elkjs/lib/elk.bundled.js";
 import { useRouter } from "next/navigation";
 
 type DependencyGraphProps = {
@@ -39,34 +39,41 @@ type DependencyGraphProps = {
 const nodeWidth = 200;
 const nodeHeight = 80;
 
-const getLayoutedElements = (nodes: Node[], edges: Edge[], dagreLib: any) => {
-  const dagreGraph = new dagreLib.graphlib.Graph();
-  dagreGraph.setDefaultEdgeLabel(() => ({}));
+const elk = new ELK();
 
-  dagreGraph.setGraph({ rankdir: "LR" });
+const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
+  const graph = {
+    id: "root",
+    layoutOptions: {
+      "elk.algorithm": "layered",
+      "elk.direction": "RIGHT",
+      "elk.spacing.nodeNode": "80",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "100",
+    },
+    children: nodes.map((node) => ({
+      id: node.id,
+      width: nodeWidth,
+      height: nodeHeight,
+    })),
+    edges: edges.map((edge) => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target],
+    })),
+  };
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagreLib.layout(dagreGraph);
+  const layoutedGraph = await elk.layout(graph);
 
   const layoutedNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
+    const layoutedNode = layoutedGraph.children?.find((n) => n.id === node.id);
     return {
       ...node,
-      targetPosition: Position.Left,
-      sourcePosition: Position.Right,
-      // We are shifting the dagre node position (anchor=center center) to the top left
-      // so it matches the React Flow node anchor point (top left).
       position: {
-        x: nodeWithPosition.x - nodeWidth / 2,
-        y: nodeWithPosition.y - nodeHeight / 2,
+        x: layoutedNode?.x ?? 0,
+        y: layoutedNode?.y ?? 0,
       },
+      sourcePosition: Position.Right,
+      targetPosition: Position.Left,
     };
   });
 
@@ -79,102 +86,106 @@ export function DependencyGraph({
   dependents,
 }: DependencyGraphProps) {
   const router = useRouter();
-  const [dagre, setDagre] = useState<any>(null);
+  const [layoutedNodes, setLayoutedNodes] = useState<Node[]>([]);
+  const [layoutedEdges, setLayoutedEdges] = useState<Edge[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Dynamically import dagre on the client side only
-    import("@dagrejs/dagre").then((mod) => {
-      setDagre(mod.default);
-    });
-  }, []);
+    const computeLayout = async () => {
+      const nodes: Node[] = [];
+      const edges: Edge[] = [];
 
-  const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
-    if (!dagre) {
-      // Return empty layout while dagre is loading
-      return { nodes: [], edges: [] };
-    }
-
-    const nodes: Node[] = [];
-    const edges: Edge[] = [];
-
-    // Current Project (Center)
-    nodes.push({
-      id: currentProject.id,
-      type: "input", // or default, but making it visually distinct might be nice
-      data: { label: `${currentProject.title} (Current)` },
-      position: { x: 0, y: 0 },
-      style: {
-        background: "#fff",
-        border: "2px solid #000",
-        borderRadius: "8px",
-        padding: "10px",
-        width: nodeWidth,
-        fontWeight: "bold",
-        textAlign: "center",
-      },
-    });
-
-    // Dependencies (Projects this one depends on) -> Me -> Them
-    // "Me -> Them" means I am the source, they are the target.
-    dependencies.forEach((dep) => {
+      // Current Project (Center)
       nodes.push({
-        id: dep.id,
-        data: { label: dep.title },
+        id: currentProject.id,
+        type: "input",
+        data: { label: `${currentProject.title} (Current)` },
         position: { x: 0, y: 0 },
         style: {
-          background: "#f4f4f5",
-          border: "1px solid #ddd",
+          background: "#fff",
+          border: "2px solid #000",
           borderRadius: "8px",
           padding: "10px",
           width: nodeWidth,
+          fontWeight: "bold",
           textAlign: "center",
         },
       });
-      edges.push({
-        id: `e-${currentProject.id}-${dep.id}`,
-        source: currentProject.id,
-        target: dep.id,
-        animated: true,
-        type: "smoothstep",
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-        },
-      });
-    });
 
-    // Dependents (Projects that depend on this one) -> Them -> Me
-    // "Them -> Me" means they are source, I am target.
-    dependents.forEach((dep) => {
-      nodes.push({
-        id: dep.id,
-        data: { label: dep.title },
-        position: { x: 0, y: 0 },
-        style: {
-          background: "#f4f4f5",
-          border: "1px solid #ddd",
-          borderRadius: "8px",
-          padding: "10px",
-          width: nodeWidth,
-          textAlign: "center",
-        },
+      // Dependencies (Projects this one depends on) -> Me -> Them
+      dependencies.forEach((dep) => {
+        nodes.push({
+          id: dep.id,
+          data: { label: dep.title },
+          position: { x: 0, y: 0 },
+          style: {
+            background: "#f4f4f5",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "10px",
+            width: nodeWidth,
+            textAlign: "center",
+          },
+        });
+        edges.push({
+          id: `e-${currentProject.id}-${dep.id}`,
+          source: currentProject.id,
+          target: dep.id,
+          animated: true,
+          type: "smoothstep",
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+          },
+        });
       });
-      edges.push({
-        id: `e-${dep.id}-${currentProject.id}`,
-        source: dep.id,
-        target: currentProject.id,
-        animated: true,
-        type: "smoothstep",
-        markerEnd: {
-          type: MarkerType.ArrowClosed,
-        },
+
+      // Dependents (Projects that depend on this one) -> Them -> Me
+      dependents.forEach((dep) => {
+        nodes.push({
+          id: dep.id,
+          data: { label: dep.title },
+          position: { x: 0, y: 0 },
+          style: {
+            background: "#f4f4f5",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            padding: "10px",
+            width: nodeWidth,
+            textAlign: "center",
+          },
+        });
+        edges.push({
+          id: `e-${dep.id}-${currentProject.id}`,
+          source: dep.id,
+          target: currentProject.id,
+          animated: true,
+          type: "smoothstep",
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+          },
+        });
       });
-    });
 
-    return getLayoutedElements(nodes, edges, dagre);
-  }, [currentProject, dependencies, dependents, dagre]);
+      const { nodes: lNodes, edges: lEdges } = await getLayoutedElements(
+        nodes,
+        edges,
+      );
+      setLayoutedNodes(lNodes);
+      setLayoutedEdges(lEdges);
+      setIsLoading(false);
+    };
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    computeLayout();
+  }, [currentProject, dependencies, dependents]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+
+  // Update nodes and edges when layout is computed
+  useEffect(() => {
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+  }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -185,7 +196,7 @@ export function DependencyGraph({
     [router, currentProject.id],
   );
 
-  if (!dagre) {
+  if (isLoading) {
     return (
       <div className="h-[500px] border rounded-lg bg-slate-50 flex items-center justify-center">
         <p className="text-muted-foreground">Loading graph...</p>
