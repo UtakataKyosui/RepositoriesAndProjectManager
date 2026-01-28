@@ -4,18 +4,21 @@ import {
   Background,
   Controls,
   type Edge,
+  type EdgeProps,
   MarkerType,
   MiniMap,
   type Node,
+  type NodeProps,
   Position,
   ReactFlow,
   useEdgesState,
   useNodesState,
 } from "@xyflow/react";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
 import ELK from "elkjs/lib/elk.bundled.js";
+import { ArrowRight, Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type DependencyGraphProps = {
@@ -36,10 +39,61 @@ type DependencyGraphProps = {
   }[]; // Projects that depend on me (Incoming)
 };
 
-const nodeWidth = 200;
-const nodeHeight = 80;
+type NodeData = {
+  label: string;
+  nodeType: "current" | "dependency" | "dependent";
+};
+
+const nodeWidth = 220;
+const nodeHeight = 100;
 
 const elk = new ELK();
+
+// カスタムノードコンポーネント
+function CustomNode({ data }: { data: NodeData }) {
+  const { label, nodeType } = data;
+
+  const getNodeStyles = () => {
+    switch (nodeType) {
+      case "current":
+        return "bg-primary text-primary-foreground border-2 border-primary shadow-lg";
+      case "dependency":
+        return "bg-secondary text-secondary-foreground border-2 border-blue-500";
+      case "dependent":
+        return "bg-accent text-accent-foreground border-2 border-green-500";
+    }
+  };
+
+  const getLabel = () => {
+    switch (nodeType) {
+      case "current":
+        return "このプロジェクト";
+      case "dependency":
+        return "依存先";
+      case "dependent":
+        return "依存元";
+    }
+  };
+
+  return (
+    <div
+      className={`rounded-lg p-3 ${getNodeStyles()} transition-all hover:shadow-xl cursor-pointer`}
+      style={{ width: nodeWidth, height: nodeHeight }}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <Box className="h-4 w-4" />
+        <span className="text-xs font-medium opacity-75">{getLabel()}</span>
+      </div>
+      <div className="font-semibold text-sm line-clamp-2 break-words">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+const nodeTypes = {
+  custom: CustomNode,
+};
 
 const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
   const graph = {
@@ -47,8 +101,8 @@ const getLayoutedElements = async (nodes: Node[], edges: Edge[]) => {
     layoutOptions: {
       "elk.algorithm": "layered",
       "elk.direction": "RIGHT",
-      "elk.spacing.nodeNode": "80",
-      "elk.layered.spacing.nodeNodeBetweenLayers": "100",
+      "elk.spacing.nodeNode": "100",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "120",
     },
     children: nodes.map((node) => ({
       id: node.id,
@@ -92,40 +146,30 @@ export function DependencyGraph({
 
   useEffect(() => {
     const computeLayout = async () => {
-      const nodes: Node[] = [];
+      const nodes: Node<NodeData>[] = [];
       const edges: Edge[] = [];
 
       // Current Project (Center)
       nodes.push({
         id: currentProject.id,
-        type: "input",
-        data: { label: `${currentProject.title} (Current)` },
-        position: { x: 0, y: 0 },
-        style: {
-          background: "#fff",
-          border: "2px solid #000",
-          borderRadius: "8px",
-          padding: "10px",
-          width: nodeWidth,
-          fontWeight: "bold",
-          textAlign: "center",
+        type: "custom",
+        data: {
+          label: currentProject.title,
+          nodeType: "current",
         },
+        position: { x: 0, y: 0 },
       });
 
       // Dependencies (Projects this one depends on) -> Me -> Them
       dependencies.forEach((dep) => {
         nodes.push({
           id: dep.id,
-          data: { label: dep.title },
-          position: { x: 0, y: 0 },
-          style: {
-            background: "#f4f4f5",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            padding: "10px",
-            width: nodeWidth,
-            textAlign: "center",
+          type: "custom",
+          data: {
+            label: dep.title,
+            nodeType: "dependency",
           },
+          position: { x: 0, y: 0 },
         });
         edges.push({
           id: `e-${currentProject.id}-${dep.id}`,
@@ -133,8 +177,12 @@ export function DependencyGraph({
           target: dep.id,
           animated: true,
           type: "smoothstep",
+          label: "依存",
+          style: { stroke: "#3b82f6" },
+          labelStyle: { fill: "#3b82f6", fontWeight: 600 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
+            color: "#3b82f6",
           },
         });
       });
@@ -143,16 +191,12 @@ export function DependencyGraph({
       dependents.forEach((dep) => {
         nodes.push({
           id: dep.id,
-          data: { label: dep.title },
-          position: { x: 0, y: 0 },
-          style: {
-            background: "#f4f4f5",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            padding: "10px",
-            width: nodeWidth,
-            textAlign: "center",
+          type: "custom",
+          data: {
+            label: dep.title,
+            nodeType: "dependent",
           },
+          position: { x: 0, y: 0 },
         });
         edges.push({
           id: `e-${dep.id}-${currentProject.id}`,
@@ -160,8 +204,12 @@ export function DependencyGraph({
           target: currentProject.id,
           animated: true,
           type: "smoothstep",
+          label: "依存",
+          style: { stroke: "#22c55e" },
+          labelStyle: { fill: "#22c55e", fontWeight: 600 },
           markerEnd: {
             type: MarkerType.ArrowClosed,
+            color: "#22c55e",
           },
         });
       });
@@ -198,25 +246,41 @@ export function DependencyGraph({
 
   if (isLoading) {
     return (
-      <div className="h-[500px] border rounded-lg bg-slate-50 flex items-center justify-center">
+      <div className="h-[500px] border rounded-lg bg-background flex items-center justify-center">
         <p className="text-muted-foreground">Loading graph...</p>
       </div>
     );
   }
 
   return (
-    <div className="h-[500px] border rounded-lg bg-slate-50">
+    <div className="h-[500px] border rounded-lg bg-background">
       <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
+        nodeTypes={nodeTypes}
         fitView
       >
         <Controls />
-        <MiniMap />
-        <Background gap={12} size={1} />
+        <MiniMap
+          className="bg-background"
+          nodeColor={(node) => {
+            const data = node.data as NodeData;
+            switch (data.nodeType) {
+              case "current":
+                return "hsl(var(--primary))";
+              case "dependency":
+                return "hsl(var(--secondary))";
+              case "dependent":
+                return "hsl(var(--accent))";
+              default:
+                return "hsl(var(--muted))";
+            }
+          }}
+        />
+        <Background gap={12} size={1} className="bg-muted/20" />
       </ReactFlow>
     </div>
   );
