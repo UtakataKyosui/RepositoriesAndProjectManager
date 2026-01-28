@@ -1,6 +1,6 @@
 "use client";
-import queryClient from "@/client/tanstack-client";
 import { QueryClientProvider } from "@tanstack/react-query";
+import queryClient from "@/client/tanstack-client";
 
 export default function TanStackProvider({
   children,

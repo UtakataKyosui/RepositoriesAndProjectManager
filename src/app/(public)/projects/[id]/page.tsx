@@ -1,6 +1,8 @@
 import { ArrowLeft, ExternalLink, Github } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { type GitHubCommit, getRepositoryCommits } from "@/actions/github";
+import { CommitList } from "@/components/common/commit-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,29 +60,53 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {project.repositories.map((repo) => (
-                  <Link
-                    key={repo.id}
-                    href={repo.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Github className="h-5 w-5 text-muted-foreground" />
-                        <div>
-                          <p className="font-medium">{repo.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {repo.url}
-                          </p>
+              <div className="space-y-6">
+                {project.repositories.map(async (repo) => {
+                  // 各リポ ジトリのコミットを取得
+                  let commits: GitHubCommit[] = [];
+                  try {
+                    commits = await getRepositoryCommits(repo.url);
+                  } catch (error) {
+                    console.error(
+                      `Failed to fetch commits for ${repo.name}:`,
+                      error,
+                    );
+                  }
+
+                  return (
+                    <div key={repo.id} className="space-y-3">
+                      <Link
+                        href={repo.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block"
+                      >
+                        <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <Github className="h-5 w-5 text-muted-foreground" />
+                            <div>
+                              <p className="font-medium">{repo.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {repo.url}
+                              </p>
+                            </div>
+                          </div>
+                          <ExternalLink className="h-4 w-4 text-muted-foreground" />
                         </div>
-                      </div>
-                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                      </Link>
+
+                      {/* コミット履歴セクション */}
+                      {commits.length > 0 && (
+                        <div className="pl-4">
+                          <h4 className="text-sm font-medium mb-2 text-muted-foreground">
+                            最新のコミット
+                          </h4>
+                          <CommitList commits={commits} />
+                        </div>
+                      )}
                     </div>
-                  </Link>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

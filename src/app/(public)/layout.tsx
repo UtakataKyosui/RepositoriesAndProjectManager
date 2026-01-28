@@ -2,15 +2,15 @@ import AutoBreadcrumb from "@/components/common/auto-breadcrumb";
 import Header from "@/components/common/header";
 
 export default function PublicLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <>
-            <Header />
-            <AutoBreadcrumb />
-            {children}
-        </>
-    );
+  return (
+    <>
+      <Header />
+      <AutoBreadcrumb />
+      {children}
+    </>
+  );
 }

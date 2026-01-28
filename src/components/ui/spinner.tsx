@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 function Spinner({ className, ...props }: React.ComponentProps<"svg">) {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: アイコンコンポーネントをラップするため
     <Loader2Icon
       role="status"
       aria-label="Loading"

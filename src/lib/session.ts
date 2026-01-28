@@ -1,6 +1,6 @@
+import { headers } from "next/headers";
 import { cache } from "react";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 
 export const getSession = cache(async () => {
   try {
@@ -9,7 +9,10 @@ export const getSession = cache(async () => {
     });
 
     if (process.env.NODE_ENV === "development") {
-      console.log("[getSession] Session retrieved:", session ? "✓ Found" : "✗ Not found");
+      console.log(
+        "[getSession] Session retrieved:",
+        session ? "✓ Found" : "✗ Not found",
+      );
       if (session) {
         console.log("[getSession] User:", session.user.email);
       }
