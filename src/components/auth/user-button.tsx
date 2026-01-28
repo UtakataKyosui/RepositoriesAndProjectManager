@@ -35,8 +35,12 @@ export default function UserButton() {
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/");
-          router.refresh();
+          // router.refresh() だけではキャッシュが残る場合があるため、
+          // 完全に状態をリセットするために window.location.href を使用します
+          window.location.href = "/";
+        },
+        onError: (ctx) => {
+          console.error("Sign out failed:", ctx);
         },
       },
     });
