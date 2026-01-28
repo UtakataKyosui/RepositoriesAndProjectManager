@@ -19,7 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { getMyRepositories, type GitHubRepo } from "@/actions/github";
-import { createProject } from "@/actions/project";
+import { createProject, updateProject } from "@/actions/project";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +37,20 @@ const formSchema = z.object({
 
 type ProjectFormValues = z.infer<typeof formSchema>;
 
-export function ProjectForm() {
+type ProjectFormProps = {
+    projectId?: string;
+    initialData?: {
+        title: string;
+        description?: string | null;
+        published: boolean;
+        repositories: {
+            url: string;
+            name: string;
+        }[];
+    };
+};
+
+export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
     const router = useRouter();
     const [repos, setRepos] = useState<GitHubRepo[]>([]);
     const [loadingRepos, setLoadingRepos] = useState(false);
@@ -46,10 +59,10 @@ export function ProjectForm() {
     const form = useForm<ProjectFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            title: "",
-            description: "",
-            published: false,
-            repositoryUrls: [],
+            title: initialData?.title || "",
+            description: initialData?.description || "",
+            published: initialData?.published || false,
+            repositoryUrls: initialData?.repositories.map(r => r.url) || [],
         },
     });
 
@@ -67,6 +80,15 @@ export function ProjectForm() {
         }
         fetchRepos();
     }, []);
+
+    // 初期データがある場合、選択済みリポジトリを設定
+    useEffect(() => {
+        if (initialData?.repositories.length && repos.length > 0) {
+            const selectedRepoUrls = initialData.repositories.map(r => r.url);
+            const selected = repos.filter(r => selectedRepoUrls.includes(r.html_url));
+            setSelectedRepos(selected);
+        }
+    }, [initialData, repos]);
 
     function toggleRepo(repo: GitHubRepo) {
         const currentUrls = form.getValues("repositoryUrls");
@@ -88,30 +110,35 @@ export function ProjectForm() {
 
     async function onSubmit(values: ProjectFormValues) {
         try {
-            // Find names for the selected URLs
-            // This is a bit redundant but ensures we pass names too if we want to store them
-            // For now the action just takes urls, but we can pass more data if needed.
-            // Actually the schema in action/project should probably take name too.
-            // But for MVP let's just pass what the form gives.
-            // Wait, I haven't created the project action yet. I'll pass the full repo objects effectively.
-
             const repositories = selectedRepos.map(repo => ({
                 url: repo.html_url,
                 name: repo.full_name
             }));
 
-            await createProject({
-                title: values.title,
-                description: values.description,
-                published: values.published,
-                repositories: repositories
-            });
+            if (projectId) {
+                // 編集モード
+                await updateProject(projectId, {
+                    title: values.title,
+                    description: values.description,
+                    published: values.published,
+                    repositories: repositories
+                });
+                toast.success("Project updated successfully");
+            } else {
+                // 新規作成モード
+                await createProject({
+                    title: values.title,
+                    description: values.description,
+                    published: values.published,
+                    repositories: repositories
+                });
+                toast.success("Project created successfully");
+            }
 
-            toast.success("Project created successfully");
             router.push("/admin");
             router.refresh();
         } catch (error) {
-            toast.error("Failed to create project");
+            toast.error(`Failed to ${projectId ? 'update' : 'create'} project`);
         }
     }
 
@@ -207,7 +234,7 @@ export function ProjectForm() {
 
                 <Button type="submit" disabled={form.formState.isSubmitting}>
                     {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Create Project
+                    {projectId ? 'Update Project' : 'Create Project'}
                 </Button>
             </form>
         </Form>
