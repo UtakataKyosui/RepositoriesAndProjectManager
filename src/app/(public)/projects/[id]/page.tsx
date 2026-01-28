@@ -4,19 +4,11 @@ import {
   Github,
   Link as LinkIcon,
 } from "lucide-react";
-import dynamicImport from "next/dynamic";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { type GitHubCommit, getRepositoryCommits } from "@/actions/github";
 import { CommitList } from "@/components/common/commit-list";
-
-const DependencyGraph = dynamicImport(
-  () =>
-    import("@/components/project/dependency-graph").then(
-      (mod) => mod.DependencyGraph,
-    ),
-  { ssr: false },
-);
+import { DependencyGraphWrapper as DependencyGraph } from "@/components/project/dependency-graph-wrapper";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
