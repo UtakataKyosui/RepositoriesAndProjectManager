@@ -12,7 +12,25 @@ type CreateProjectInput = {
     url: string;
     name: string;
   }[];
+  dependencyIds?: string[];
 };
+
+export async function getMyProjects() {
+  const session = await getSession();
+
+  if (!session) {
+    return [];
+  }
+
+  return prisma.project.findMany({
+    where: {
+      userId: session.user.id,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+}
 
 export async function createProject(input: CreateProjectInput) {
   const session = await getSession();
@@ -31,6 +49,11 @@ export async function createProject(input: CreateProjectInput) {
         create: input.repositories.map((repo) => ({
           url: repo.url,
           name: repo.name,
+        })),
+      },
+      dependencies: {
+        create: input.dependencyIds?.map((id) => ({
+          dependencyId: id,
         })),
       },
     },
@@ -72,6 +95,12 @@ export async function updateProject(
         create: input.repositories.map((repo) => ({
           url: repo.url,
           name: repo.name,
+        })),
+      },
+      dependencies: {
+        deleteMany: {}, // 既存の依存関係を削除
+        create: input.dependencyIds?.map((id) => ({
+          dependencyId: id,
         })),
       },
     },

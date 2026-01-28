@@ -82,6 +82,8 @@ model Project {
   userId      String
   user        User         @relation(fields: [userId], references: [id])
   repositories Repository[]
+  dependencies ProjectDependency[] @relation("dependency")
+  dependents   ProjectDependency[] @relation("dependent")
 
   @@map("project")
 }
@@ -94,4 +96,14 @@ model Repository {
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
   @@map("repository")
+}
+
+model ProjectDependency {
+  dependencyId String
+  dependency   Project @relation("dependency", fields: [dependencyId], references: [id])
+  dependentId  String
+  dependent    Project @relation("dependent", fields: [dependentId], references: [id])
+
+  @@id([dependencyId, dependentId])
+  @@map("project_dependency")
 }

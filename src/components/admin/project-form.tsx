@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { type GitHubRepo, getMyRepositories } from "@/actions/github";
-import { createProject, updateProject } from "@/actions/project";
+import { createProject, getMyProjects, updateProject } from "@/actions/project";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,6 +33,7 @@ const formSchema = z.object({
   repositoryUrls: z.array(z.string()).max(5, {
     message: "You can select up to 5 repositories.",
   }),
+  dependencyIds: z.array(z.string()).optional(),
 });
 
 type ProjectFormValues = z.infer<typeof formSchema>;
@@ -47,8 +48,13 @@ type ProjectFormProps = {
       url: string;
       name: string;
     }[];
+    dependencies?: {
+      dependencyId: string;
+    }[];
   };
 };
+
+type ProjectData = Awaited<ReturnType<typeof getMyProjects>>[number];
 
 export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
   const router = useRouter();
@@ -63,8 +69,41 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
       description: initialData?.description || "",
       published: initialData?.published || false,
       repositoryUrls: initialData?.repositories.map((r) => r.url) || [],
+      dependencyIds:
+        initialData?.dependencies?.map((d) => d.dependencyId) || [],
     },
   });
+
+  const [projects, setProjects] = useState<ProjectData[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+
+  useEffect(() => {
+    async function fetchProjects() {
+      setLoadingProjects(true);
+      try {
+        const data = await getMyProjects();
+        // 自分自身は依存先として選択できないように除外
+        setProjects(data.filter((p) => p.id !== projectId));
+      } catch (_error) {
+        toast.error("Failed to load projects");
+      } finally {
+        setLoadingProjects(false);
+      }
+    }
+    fetchProjects();
+  }, [projectId]);
+
+  function toggleDependency(projectId: string) {
+    const currentIds = form.getValues("dependencyIds") || [];
+    if (currentIds.includes(projectId)) {
+      form.setValue(
+        "dependencyIds",
+        currentIds.filter((id) => id !== projectId),
+      );
+    } else {
+      form.setValue("dependencyIds", [...currentIds, projectId]);
+    }
+  }
 
   useEffect(() => {
     async function fetchRepos() {
@@ -124,6 +163,7 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
           description: values.description,
           published: values.published,
           repositories: repositories,
+          dependencyIds: values.dependencyIds,
         });
         toast.success("Project updated successfully");
       } else {
@@ -133,6 +173,7 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
           description: values.description,
           published: values.published,
           repositories: repositories,
+          dependencyIds: values.dependencyIds,
         });
         toast.success("Project created successfully");
       }
@@ -239,6 +280,52 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
           <FormMessage>
             {form.formState.errors.repositoryUrls?.message}
           </FormMessage>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Dependencies</h3>
+          <p className="text-sm text-muted-foreground">
+            Select other projects that this project depends on.
+          </p>
+          <div className="border rounded-md p-4 h-64 overflow-y-auto space-y-2">
+            {loadingProjects ? (
+              <div className="flex justify-center p-4">
+                <Loader2 className="animate-spin h-6 w-6" />
+              </div>
+            ) : projects.length > 0 ? (
+              projects.map((project) => (
+                <div
+                  key={project.id}
+                  className="flex items-center space-x-2 p-2 hover:bg-muted/50 rounded"
+                >
+                  <Checkbox
+                    id={`dep-${project.id}`}
+                    checked={(form.watch("dependencyIds") || []).includes(
+                      project.id,
+                    )}
+                    onCheckedChange={() => toggleDependency(project.id)}
+                  />
+                  <div className="grid gap-1.5 leading-none">
+                    <label
+                      htmlFor={`dep-${project.id}`}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
+                      {project.title}
+                    </label>
+                    {project.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-1">
+                        {project.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center text-muted-foreground p-4">
+                No other projects found.
+              </div>
+            )}
+          </div>
         </div>
 
         <Button type="submit" disabled={form.formState.isSubmitting}>

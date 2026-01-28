@@ -25,6 +25,7 @@ export default async function EditProjectPage({ params }: PageProps) {
     },
     include: {
       repositories: true,
+      dependencies: true,
     },
   });
 
@@ -49,6 +50,9 @@ export default async function EditProjectPage({ params }: PageProps) {
           repositories: project.repositories.map((r) => ({
             url: r.url,
             name: r.name ?? "",
+          })),
+          dependencies: project.dependencies.map((d) => ({
+            dependencyId: d.dependencyId,
           })),
         }}
       />
