@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-
+import { signOut } from "@/actions/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,16 +32,7 @@ export default function UserButton() {
 
   const handleSignOut = async (e: Event) => {
     e.preventDefault();
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          window.location.href = "/";
-        },
-        onError: (ctx) => {
-          console.error("Sign out failed:", ctx);
-        },
-      },
-    });
+    await signOut();
   };
 
   return (

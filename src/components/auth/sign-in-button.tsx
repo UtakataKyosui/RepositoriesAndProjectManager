@@ -2,30 +2,15 @@
 
 import { Github } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+import { signInWithGithub } from "@/actions/auth";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
 
 export default function SignInButton() {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
     setLoading(true);
-    await authClient.signIn.social(
-      {
-        provider: "github",
-        callbackURL: "/admin",
-      },
-      {
-        onSuccess: () => {
-          setLoading(false);
-        },
-        onError: (ctx) => {
-          setLoading(false);
-          toast.error(ctx.error.message);
-        },
-      },
-    );
+    await signInWithGithub();
   };
 
   return (
