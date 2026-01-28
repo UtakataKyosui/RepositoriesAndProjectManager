@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import prisma from "@/lib/prisma";
 
 type ProjectWithRepositories = Project & { repositories: Repository[] };
@@ -35,11 +36,8 @@ export default async function Home() {
       <main className="container mx-auto px-4 py-12">
         <section className="text-center mb-16 space-y-4">
           <h2 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-            My Projects
+            着手中コンテンツ一覧
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            A collection of my recent work and open source contributions.
-          </p>
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -57,8 +55,10 @@ export default async function Home() {
                     {project.title}
                   </Link>
                 </CardTitle>
-                <CardDescription className="line-clamp-3 min-h-[4.5rem]">
-                  {project.description || "No description provided."}
+                <CardDescription className="h-[5rem]">
+                  <ScrollArea className="h-full w-full rounded-md border bg-muted/20 p-2">
+                    {project.description || "No description provided."}
+                  </ScrollArea>
                 </CardDescription>
               </CardHeader>
               <CardContent className="mt-auto space-y-4">

@@ -18,6 +18,7 @@ import "@xyflow/react/dist/style.css";
 import ELK from "elkjs/lib/elk.bundled.js";
 import { Box } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type DependencyGraphProps = {
   currentProject: {
@@ -39,17 +40,18 @@ type DependencyGraphProps = {
 
 type NodeData = {
   label: string;
+  description?: string | null;
   nodeType: "current" | "dependency" | "dependent";
 };
 
 const nodeWidth = 220;
-const nodeHeight = 100;
+const nodeHeight = 150;
 
 const elk = new ELK();
 
 // カスタムノードコンポーネント
 function CustomNode({ data }: { data: NodeData }) {
-  const { label, nodeType } = data;
+  const { label, description, nodeType } = data;
 
   const getNodeStyles = () => {
     switch (nodeType) {
@@ -75,16 +77,21 @@ function CustomNode({ data }: { data: NodeData }) {
 
   return (
     <div
-      className={`rounded-lg p-3 ${getNodeStyles()} transition-all hover:shadow-xl cursor-pointer`}
+      className={`rounded-lg p-3 ${getNodeStyles()} transition-all hover:shadow-xl cursor-pointer flex flex-col`}
       style={{ width: nodeWidth, height: nodeHeight }}
     >
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center gap-2 mb-2 shrink-0">
         <Box className="h-4 w-4" />
         <span className="text-xs font-medium opacity-75">{getLabel()}</span>
       </div>
-      <div className="font-semibold text-sm line-clamp-2 break-words">
+      <div className="font-semibold text-sm line-clamp-1 break-words shrink-0 mb-2">
         {label}
       </div>
+      <ScrollArea className="flex-1 w-full opacity-80 rounded-md border bg-background/10 p-1">
+        <p className="text-[10px] leading-tight break-words whitespace-pre-wrap">
+          {description || "No description"}
+        </p>
+      </ScrollArea>
     </div>
   );
 }
@@ -153,6 +160,7 @@ export function DependencyGraph({
         type: "custom",
         data: {
           label: currentProject.title,
+          description: currentProject.description,
           nodeType: "current",
         },
         position: { x: 0, y: 0 },
@@ -165,6 +173,7 @@ export function DependencyGraph({
           type: "custom",
           data: {
             label: dep.title,
+            description: dep.description,
             nodeType: "dependency",
           },
           position: { x: 0, y: 0 },
@@ -192,6 +201,7 @@ export function DependencyGraph({
           type: "custom",
           data: {
             label: dep.title,
+            description: dep.description,
             nodeType: "dependent",
           },
           position: { x: 0, y: 0 },
