@@ -30,11 +30,11 @@ export default function UserButton() {
     return <SignInButton />;
   }
 
-  const handleSignOut = async () => {
+  const handleSignOut = async (e: Event) => {
+    e.preventDefault();
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
-          // キャッシュクリアのためにwindow.location.hrefを使用
           window.location.href = "/";
         },
         onError: (ctx) => {
@@ -75,7 +75,7 @@ export default function UserButton() {
           <Link href="/admin">Admin Dashboard</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+        <DropdownMenuItem onSelect={handleSignOut} className="cursor-pointer">
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
