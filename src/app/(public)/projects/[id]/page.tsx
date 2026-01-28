@@ -8,6 +8,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { type GitHubCommit, getRepositoryCommits } from "@/actions/github";
 import { CommitList } from "@/components/common/commit-list";
+import { DependencyGraph } from "@/components/project/dependency-graph";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -217,6 +218,29 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   </Link>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Dependency Graph */}
+        {(project.dependencies.length > 0 || project.dependents.length > 0) && (
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LinkIcon className="h-5 w-5" />
+                Dependency Graph
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DependencyGraph
+                currentProject={{
+                  id: project.id,
+                  title: project.title,
+                  description: project.description,
+                }}
+                dependencies={project.dependents.map((d) => d.dependency)}
+                dependents={project.dependencies.map((d) => d.dependent)}
+              />
             </CardContent>
           </Card>
         )}

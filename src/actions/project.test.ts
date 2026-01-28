@@ -73,7 +73,7 @@ describe("Project Actions", () => {
           published: input.published,
           userId: mockUserId,
           repositories: { create: [] },
-          dependencies: {
+          dependents: {
             create: [{ dependencyId: "dep-1" }, { dependencyId: "dep-2" }],
           },
         },
