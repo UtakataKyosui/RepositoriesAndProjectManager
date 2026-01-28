@@ -125,9 +125,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                                   <p className="font-medium">
                                     {formatRepositoryName(repo.name || "")}
                                   </p>
-                                  <p className="text-sm text-muted-foreground">
-                                    {repo.url}
-                                  </p>
                                 </div>
                               </div>
                               <ExternalLink className="h-4 w-4 text-muted-foreground" />
