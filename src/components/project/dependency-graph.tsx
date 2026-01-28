@@ -14,9 +14,8 @@ import {
   useNodesState,
 } from "@xyflow/react";
 import type React from "react";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "@xyflow/react/dist/style.css";
-import dagre from "@dagrejs/dagre";
 import { useRouter } from "next/navigation";
 
 type DependencyGraphProps = {
@@ -40,8 +39,8 @@ type DependencyGraphProps = {
 const nodeWidth = 200;
 const nodeHeight = 80;
 
-const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
-  const dagreGraph = new dagre.graphlib.Graph();
+const getLayoutedElements = (nodes: Node[], edges: Edge[], dagreLib: any) => {
+  const dagreGraph = new dagreLib.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
   dagreGraph.setGraph({ rankdir: "LR" });
@@ -54,7 +53,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     dagreGraph.setEdge(edge.source, edge.target);
   });
 
-  dagre.layout(dagreGraph);
+  dagreLib.layout(dagreGraph);
 
   const layoutedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
@@ -80,8 +79,21 @@ export function DependencyGraph({
   dependents,
 }: DependencyGraphProps) {
   const router = useRouter();
+  const [dagre, setDagre] = useState<any>(null);
+
+  useEffect(() => {
+    // Dynamically import dagre on the client side only
+    import("@dagrejs/dagre").then((mod) => {
+      setDagre(mod.default);
+    });
+  }, []);
 
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
+    if (!dagre) {
+      // Return empty layout while dagre is loading
+      return { nodes: [], edges: [] };
+    }
+
     const nodes: Node[] = [];
     const edges: Edge[] = [];
 
@@ -158,8 +170,8 @@ export function DependencyGraph({
       });
     });
 
-    return getLayoutedElements(nodes, edges);
-  }, [currentProject, dependencies, dependents]);
+    return getLayoutedElements(nodes, edges, dagre);
+  }, [currentProject, dependencies, dependents, dagre]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -172,6 +184,14 @@ export function DependencyGraph({
     },
     [router, currentProject.id],
   );
+
+  if (!dagre) {
+    return (
+      <div className="h-[500px] border rounded-lg bg-slate-50 flex items-center justify-center">
+        <p className="text-muted-foreground">Loading graph...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[500px] border rounded-lg bg-slate-50">
