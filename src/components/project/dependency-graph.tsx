@@ -4,11 +4,9 @@ import {
   Background,
   Controls,
   type Edge,
-  type EdgeProps,
   MarkerType,
   MiniMap,
   type Node,
-  type NodeProps,
   Position,
   ReactFlow,
   useEdgesState,
@@ -18,7 +16,7 @@ import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
 import ELK from "elkjs/lib/elk.bundled.js";
-import { ArrowRight, Box } from "lucide-react";
+import { Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type DependencyGraphProps = {
@@ -236,7 +234,7 @@ export function DependencyGraph({
   }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
 
   const onNodeClick = useCallback(
-    (event: React.MouseEvent, node: Node) => {
+    (_event: React.MouseEvent, node: Node) => {
       if (node.id !== currentProject.id) {
         router.push(`/projects/${node.id}`);
       }

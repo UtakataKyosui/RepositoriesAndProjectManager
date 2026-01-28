@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "@/lib/prisma";
 import * as sessionLib from "@/lib/session";
-import { createProject, getMyProjects, updateProject } from "./project";
+import { createProject, getMyProjects } from "./project";
 
 // Mock dependencies
 vi.mock("@/lib/prisma", () => ({
@@ -28,6 +28,7 @@ vi.mock("@/lib/session", () => ({
 describe("Project Actions", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
     (sessionLib.getSession as any).mockResolvedValue({
       user: { id: mockUserId },
     });
@@ -39,6 +40,7 @@ describe("Project Actions", () => {
         { id: "p1", title: "Project 1", userId: mockUserId },
         { id: "p2", title: "Project 2", userId: mockUserId },
       ];
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
       (prisma.project.findMany as any).mockResolvedValue(mockProjects);
 
       const result = await getMyProjects();
@@ -62,6 +64,7 @@ describe("Project Actions", () => {
       };
 
       const mockCreatedProject = { id: "new-p", ...input };
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
       (prisma.project.create as any).mockResolvedValue(mockCreatedProject);
 
       await createProject(input);

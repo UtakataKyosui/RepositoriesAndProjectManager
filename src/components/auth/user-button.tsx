@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,7 +18,6 @@ import SignInButton from "./sign-in-button";
 
 export default function UserButton() {
   const { data: session, isPending } = authClient.useSession();
-  const router = useRouter();
 
   if (isPending)
     return (
