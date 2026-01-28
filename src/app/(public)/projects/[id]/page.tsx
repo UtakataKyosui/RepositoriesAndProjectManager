@@ -31,12 +31,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       repositories: true,
       dependencies: {
         include: {
-          dependency: true,
+          dependent: true,
         },
       },
       dependents: {
         include: {
-          dependent: true,
+          dependency: true,
         },
       },
     },

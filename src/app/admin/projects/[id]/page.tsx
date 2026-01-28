@@ -25,7 +25,7 @@ export default async function EditProjectPage({ params }: PageProps) {
     },
     include: {
       repositories: true,
-      dependencies: true,
+      dependents: true,
     },
   });
 
