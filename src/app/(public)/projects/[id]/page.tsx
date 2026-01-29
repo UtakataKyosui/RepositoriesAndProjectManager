@@ -57,6 +57,18 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  // リポジトリごとにVercelプロジェクト情報を取得
+  const repositoriesWithVercel = await Promise.all(
+    project.repositories.map(async (repo) => {
+      const vercelProject = await getProjectByRepo(repo.url);
+      return { repo, vercelProject };
+    }),
+  );
+
+  const deployedRepositories = repositoriesWithVercel.filter(
+    (item) => item.vercelProject?.targets?.production,
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-8 max-w-4xl">
@@ -131,7 +143,63 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         <div className="px-12">
           <Carousel className="w-full">
             <CarouselContent>
-              {/* Slide 1: Repositories */}
+              {/* Slide 1: Vercel Deployments (Conditional) */}
+              {deployedRepositories.length > 0 && (
+                <CarouselItem>
+                  <div className="h-full p-1">
+                    <Card className="h-full">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <svg
+                            viewBox="0 0 1155 1000"
+                            className="h-5 w-5 fill-black dark:fill-white"
+                            aria-label="Vercel Logo"
+                            role="img"
+                          >
+                            <title>Vercel Logo</title>
+                            <path d="M577.344 0L1154.69 1000H0L577.344 0Z" />
+                          </svg>
+                          Vercel Deployments ({deployedRepositories.length})
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          {deployedRepositories.map(
+                            ({ repo, vercelProject }) => (
+                              <Link
+                                key={repo.id}
+                                href={`https://${vercelProject?.targets?.production?.url}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block"
+                              >
+                                <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors bg-black/5 dark:bg-white/5 h-full">
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex flex-col">
+                                      <p className="font-medium text-sm">
+                                        {formatRepositoryName(repo.name || "")}
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        {
+                                          vercelProject?.targets?.production
+                                            ?.url
+                                        }
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
+                                </div>
+                              </Link>
+                            ),
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CarouselItem>
+              )}
+
+              {/* Slide 2: Repositories */}
               <CarouselItem>
                 <div className="h-full p-1">
                   {project.repositories.length > 0 ? (
@@ -156,10 +224,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                               );
                             }
 
-                            const vercelProject = await getProjectByRepo(
-                              repo.url,
-                            );
-
                             return (
                               <div key={repo.id} className="space-y-3">
                                 <Link
@@ -182,41 +246,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                                     <ExternalLink className="h-4 w-4 text-muted-foreground" />
                                   </div>
                                 </Link>
-
-                                {vercelProject?.targets?.production && (
-                                  <Link
-                                    href={`https://${vercelProject.targets.production.url}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block"
-                                  >
-                                    <div className="flex items-center justify-between p-4 rounded-lg border hover:bg-muted/50 transition-colors bg-black/5 dark:bg-white/5">
-                                      <div className="flex items-center gap-3">
-                                        <svg
-                                          viewBox="0 0 1155 1000"
-                                          className="h-5 w-5 fill-black dark:fill-white"
-                                          aria-label="Vercel Logo"
-                                          role="img"
-                                        >
-                                          <title>Vercel Logo</title>
-                                          <path d="M577.344 0L1154.69 1000H0L577.344 0Z" />
-                                        </svg>
-                                        <div>
-                                          <p className="font-medium text-sm">
-                                            Deployed on Vercel
-                                          </p>
-                                          <p className="text-xs text-muted-foreground">
-                                            {
-                                              vercelProject.targets.production
-                                                .url
-                                            }
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                                    </div>
-                                  </Link>
-                                )}
 
                                 {/* コミット履歴セクション */}
                                 {commits.length > 0 && (
@@ -246,7 +275,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 </div>
               </CarouselItem>
 
-              {/* Slide 2: Dependency Graph */}
+              {/* Slide 3: Dependency Graph */}
               <CarouselItem>
                 <div className="h-full p-1">
                   <Card className="h-full">
