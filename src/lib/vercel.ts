@@ -1,7 +1,7 @@
 import { Vercel } from "@vercel/sdk";
 
 const vercel = new Vercel({
-  bearerToken: process.env.NEXT_PUBLIC_VERCEL_BEARER_TOKEN,
+  bearerToken: process.env.VERCEL_BEARER_TOKEN,
 });
 
 export default vercel;
