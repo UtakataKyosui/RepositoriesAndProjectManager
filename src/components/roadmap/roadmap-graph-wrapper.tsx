@@ -12,5 +12,10 @@ const RoadmapGraphComponent = dynamic(
 export function RoadmapGraphWrapper(
   props: ComponentProps<typeof RoadmapGraph>,
 ) {
-  return <RoadmapGraphComponent {...props} />;
+  return (
+    <RoadmapGraphComponent
+      key={props.projects.map((p) => p.id).join("-")}
+      {...props}
+    />
+  );
 }

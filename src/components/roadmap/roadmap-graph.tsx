@@ -117,7 +117,7 @@ export function RoadmapGraph({ projects }: RoadmapGraphProps) {
           id: `e-${projects[i].id}-${projects[i + 1].id}`,
           source: projects[i].id,
           target: projects[i + 1].id,
-          type: "smoothstep",
+          // type: "smoothstep",
           animated: true,
           markerEnd: {
             type: MarkerType.ArrowClosed,

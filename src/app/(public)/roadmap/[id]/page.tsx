@@ -1,13 +1,9 @@
+import { Check, Circle } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getMyProjects } from "@/actions/project";
 import { getRoadmap } from "@/actions/roadmap";
-import { GoalManager } from "@/components/roadmap/goal-manager";
-import { ManageProjectsDialog } from "@/components/roadmap/manage-projects-dialog";
-import { RoadmapDetailsEditor } from "@/components/roadmap/roadmap-details-editor";
 import { RoadmapGraphWrapper } from "@/components/roadmap/roadmap-graph-wrapper";
-import { SortableProjectList } from "@/components/roadmap/sortable-project-list";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -17,45 +13,33 @@ export default async function RoadmapDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  const userId = session?.user?.id;
-
-  const [roadmap, allProjects] = await Promise.all([
-    getRoadmap(id),
-    userId ? getMyProjects() : Promise.resolve([]),
-  ]);
+  const roadmap = await getRoadmap(id);
 
   if (!roadmap) {
     notFound();
   }
 
-  const isOwner = userId === roadmap.userId;
-
   // Sort projects by order
   const sortedProjects = [...roadmap.projects].sort(
     (a, b) => a.order - b.order,
   );
-  const existingProjectIds = roadmap.projects.map((p) => p.projectId);
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <main className="flex-1 container mx-auto px-4 py-8 flex flex-col gap-6">
         <div className="flex justify-between items-start">
           <div className="flex-1 mr-4">
-            <RoadmapDetailsEditor
-              id={roadmap.id}
-              initialTitle={roadmap.title}
-              initialDescription={roadmap.description}
-              isOwner={isOwner}
-            />
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">
+                {roadmap.title}
+              </h1>
+              {roadmap.description && (
+                <p className="text-muted-foreground mt-2">
+                  {roadmap.description}
+                </p>
+              )}
+            </div>
           </div>
-          {isOwner && (
-            <ManageProjectsDialog
-              roadmapId={roadmap.id}
-              allProjects={allProjects}
-              existingProjectIds={existingProjectIds}
-            />
-          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
@@ -77,31 +61,42 @@ export default async function RoadmapDetailPage({
 
           <div className="space-y-6">
             <Card className="h-fit">
-              <CardContent className="pt-6">
-                <GoalManager
-                  roadmapId={roadmap.id}
-                  goals={roadmap.goals}
-                  isOwner={isOwner}
-                />
+              <CardHeader>
+                <CardTitle>Goals</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {roadmap.goals
+                    .sort((a, b) => a.order - b.order)
+                    .map((goal) => (
+                      <div
+                        key={goal.id}
+                        className="flex items-start gap-2 p-3 border rounded-md"
+                      >
+                        {goal.isCompleted ? (
+                          <Check className="h-5 w-5 text-green-500 mt-0.5" />
+                        ) : (
+                          <Circle className="h-5 w-5 text-muted-foreground mt-0.5" />
+                        )}
+                        <span
+                          className={
+                            goal.isCompleted
+                              ? "line-through text-muted-foreground"
+                              : ""
+                          }
+                        >
+                          {goal.content}
+                        </span>
+                      </div>
+                    ))}
+                  {roadmap.goals.length === 0 && (
+                    <div className="text-center text-muted-foreground py-4">
+                      No goals defined.
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
-
-            {isOwner && roadmap.projects.length > 0 && (
-              <Card className="h-fit">
-                <CardHeader>
-                  <CardTitle>Reorder Projects</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <SortableProjectList
-                    roadmapId={roadmap.id}
-                    projects={sortedProjects.map((p) => ({
-                      projectId: p.projectId,
-                      title: p.project.title,
-                    }))}
-                  />
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </main>

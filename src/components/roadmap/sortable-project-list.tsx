@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { reorderRoadmapProjects } from "@/actions/roadmap";
 import { Button } from "@/components/ui/button";
 
@@ -78,6 +78,10 @@ export function SortableProjectList({
   const [items, setItems] = useState(initialProjects);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [_isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setItems(initialProjects);
+  }, [initialProjects]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
