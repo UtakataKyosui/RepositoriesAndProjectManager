@@ -25,7 +25,7 @@ export function RoadmapCard({
   hrefPrefix = "/roadmap",
 }: RoadmapCardProps & { hrefPrefix?: string }) {
   return (
-    <Link href={`\${hrefPrefix}/\${roadmap.id}`}>
+    <Link href={`${hrefPrefix}/${roadmap.id}`}>
       <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer">
         <CardHeader>
           <div className="flex justify-between items-start gap-2">
