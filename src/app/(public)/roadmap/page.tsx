@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { getMyRoadmaps } from "@/actions/roadmap";
 import { CreateRoadmapDialog } from "@/components/roadmap/create-roadmap-dialog";
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";
@@ -7,6 +8,7 @@ import { getSession } from "@/lib/session";
 // ビルド時ではなくリクエスト時にデータベースアクセスする
 
 export default async function RoadmapPage() {
+  await connection();
   const session = await getSession();
   if (!session?.user) {
     // Or redirect to login

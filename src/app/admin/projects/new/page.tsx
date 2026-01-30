@@ -1,6 +1,8 @@
+import { connection } from "next/server";
 import { ProjectForm } from "@/components/admin/project-form";
 
-export default function NewProjectPage() {
+export default async function NewProjectPage() {
+  await connection();
   return (
     <div className="space-y-6">
       <div>

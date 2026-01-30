@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { getMyRoadmaps } from "@/actions/roadmap";
 import { CreateRoadmapDialog } from "@/components/roadmap/create-roadmap-dialog";
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";
@@ -9,6 +10,7 @@ import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 
 export default async function AdminDashboard() {
+  await connection();
   const session = await getSession();
 
   if (!session) {
