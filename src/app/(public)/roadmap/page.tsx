@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { getMyRoadmaps } from "@/actions/roadmap";
-import { CreateRoadmapDialog } from "@/components/roadmap/create-roadmap-dialog";
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";
 import { getSession } from "@/lib/session";
 
@@ -29,7 +28,6 @@ export default async function RoadmapPage() {
               Manage your project goals and milestones.
             </p>
           </div>
-          <CreateRoadmapDialog />
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
