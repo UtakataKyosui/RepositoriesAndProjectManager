@@ -4,8 +4,10 @@ import {
   Github,
   Link as LinkIcon,
 } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { type GitHubCommit, getRepositoryCommits } from "@/actions/github";
 import { CommitList } from "@/components/common/commit-list";
 import { DependencyGraphWrapper as DependencyGraph } from "@/components/project/dependency-graph-wrapper";
@@ -24,13 +26,39 @@ import prisma from "@/lib/prisma";
 import { formatRepositoryName } from "@/lib/utils";
 import { getProjectByRepo } from "@/lib/vercel";
 
-export const dynamic = "force-dynamic";
-
 type PageProps = {
   params: Promise<{ id: string }>;
 };
 
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { id } = await params;
+  const project = await prisma.project.findUnique({
+    where: {
+      id: id,
+      published: true,
+    },
+    select: {
+      title: true,
+      description: true,
+    },
+  });
+
+  if (!project) {
+    return {
+      title: "Project Not Found",
+    };
+  }
+
+  return {
+    title: project.title,
+    description: project.description,
+  };
+}
+
 export default async function ProjectDetailPage({ params }: PageProps) {
+  await connection();
   const { id } = await params;
 
   const project = await prisma.project.findUnique({

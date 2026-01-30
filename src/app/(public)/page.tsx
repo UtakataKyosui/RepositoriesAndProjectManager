@@ -19,8 +19,6 @@ import { formatRepositoryName } from "@/lib/utils";
 type ProjectWithRepositories = Project & { repositories: Repository[] };
 
 // ビルド時ではなくリクエスト時にデータベースアクセスする（Vercelビルド環境からDB接続できないため）
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 export default async function Home() {
   const projects = await prisma.project.findMany({

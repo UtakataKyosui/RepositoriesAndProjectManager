@@ -1,17 +1,38 @@
 import { Check, Circle } from "lucide-react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { getRoadmap } from "@/actions/roadmap";
 import { RoadmapGraphWrapper } from "@/components/roadmap/roadmap-graph-wrapper";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const dynamic = "force-dynamic";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const roadmap = await getRoadmap(id);
+
+  if (!roadmap) {
+    return {
+      title: "Roadmap Not Found",
+    };
+  }
+
+  return {
+    title: roadmap.title,
+    description: roadmap.description,
+  };
+}
 
 export default async function RoadmapDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  await connection();
   const { id } = await params;
   const roadmap = await getRoadmap(id);
 

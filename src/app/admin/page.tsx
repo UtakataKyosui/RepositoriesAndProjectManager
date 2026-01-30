@@ -8,8 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminDashboard() {
   const session = await getSession();
 

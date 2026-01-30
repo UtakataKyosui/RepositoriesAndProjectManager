@@ -5,7 +5,6 @@ import { RoadmapCard } from "@/components/roadmap/roadmap-card";
 import { getSession } from "@/lib/session";
 
 // ビルド時ではなくリクエスト時にデータベースアクセスする
-export const dynamic = "force-dynamic";
 
 export default async function RoadmapPage() {
   const session = await getSession();

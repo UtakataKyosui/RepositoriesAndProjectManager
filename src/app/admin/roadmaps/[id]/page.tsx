@@ -9,8 +9,6 @@ import { SortableProjectList } from "@/components/roadmap/sortable-project-list"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getSession } from "@/lib/session";
 
-export const dynamic = "force-dynamic";
-
 export default async function AdminRoadmapDetailPage({
   params,
 }: {
