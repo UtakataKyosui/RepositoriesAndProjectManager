@@ -1,6 +1,8 @@
 import type { Project, Repository } from "@prisma/client";
 import { Github } from "lucide-react";
 import Link from "next/link";
+import { getPublicRoadmaps } from "@/actions/roadmap";
+import { RoadmapCard } from "@/components/roadmap/roadmap-card";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -10,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/prisma";
 import { formatRepositoryName } from "@/lib/utils";
 
@@ -32,85 +35,118 @@ export default async function Home() {
     },
   });
 
+  const roadmaps = await getPublicRoadmaps();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main className="container mx-auto px-4 py-12">
-        <section className="text-center mb-16 space-y-4">
+        <section className="text-center mb-10 space-y-4">
           <h2 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
             着手中コンテンツ一覧
           </h2>
         </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {(projects as ProjectWithRepositories[]).map((project) => (
-            <Card
-              key={project.id}
-              className="flex flex-col h-full hover:shadow-lg transition-all duration-300 border-t-4 border-t-primary"
-            >
-              <CardHeader>
-                <CardTitle className="flex justify-between items-start gap-2">
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className="hover:underline break-words"
-                  >
-                    {project.title}
-                  </Link>
-                </CardTitle>
-                <CardDescription className="h-[5rem]">
-                  <ScrollArea className="h-full w-full rounded-md border bg-muted/20 p-2">
-                    {project.description || "No description provided."}
-                  </ScrollArea>
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="mt-auto space-y-4">
-                <div className="space-y-2">
-                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                    Repositories
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {project.repositories.slice(0, 3).map((repo) => (
+        <Tabs defaultValue="projects" className="space-y-8">
+          <div className="flex justify-center">
+            <TabsList className="grid w-full max-w-[400px] grid-cols-2">
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+              <TabsTrigger value="roadmaps">Roadmaps</TabsTrigger>
+            </TabsList>
+          </div>
+
+          <TabsContent value="projects" className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {(projects as ProjectWithRepositories[]).map((project) => (
+                <Card
+                  key={project.id}
+                  className="flex flex-col h-full hover:shadow-lg transition-all duration-300 border-t-4 border-t-primary"
+                >
+                  <CardHeader>
+                    <CardTitle className="flex justify-between items-start gap-2">
                       <Link
-                        key={repo.id}
-                        href={repo.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href={`/projects/${project.id}`}
+                        className="hover:underline break-words"
                       >
-                        <Badge
-                          variant="secondary"
-                          className="hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer flex items-center gap-1 py-1"
-                        >
-                          <Github className="h-3 w-3" />
-                          {formatRepositoryName(repo.name || "") || "Repo"}
-                        </Badge>
+                        {project.title}
                       </Link>
-                    ))}
-                    {project.repositories.length > 3 && (
-                      <Badge variant="outline">
-                        +{project.repositories.length - 3} more
-                      </Badge>
-                    )}
-                  </div>
+                    </CardTitle>
+                    <CardDescription className="h-[5rem]">
+                      <ScrollArea className="h-full w-full rounded-md border bg-muted/20 p-2">
+                        {project.description || "No description provided."}
+                      </ScrollArea>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="mt-auto space-y-4">
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                        Repositories
+                      </h4>
+                      <div className="flex flex-wrap gap-2">
+                        {project.repositories.slice(0, 3).map((repo) => (
+                          <Link
+                            key={repo.id}
+                            href={repo.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Badge
+                              variant="secondary"
+                              className="hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer flex items-center gap-1 py-1"
+                            >
+                              <Github className="h-3 w-3" />
+                              {formatRepositoryName(repo.name || "") || "Repo"}
+                            </Badge>
+                          </Link>
+                        ))}
+                        {project.repositories.length > 3 && (
+                          <Badge variant="outline">
+                            +{project.repositories.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <Link href={`/projects/${project.id}`} className="block">
+                      <button
+                        type="button"
+                        className="w-full px-4 py-2 text-sm font-medium border rounded-md hover:bg-muted transition-colors"
+                      >
+                        View Details
+                      </button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+              {projects.length === 0 && (
+                <div className="col-span-full text-center py-20 bg-muted/20 rounded-lg">
+                  <h3 className="text-2xl font-semibold mb-2">
+                    No projects yet
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Check back later for updates!
+                  </p>
                 </div>
-                <Link href={`/projects/${project.id}`} className="block">
-                  <button
-                    type="button"
-                    className="w-full px-4 py-2 text-sm font-medium border rounded-md hover:bg-muted transition-colors"
-                  >
-                    View Details
-                  </button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
-          {projects.length === 0 && (
-            <div className="col-span-full text-center py-20 bg-muted/20 rounded-lg">
-              <h3 className="text-2xl font-semibold mb-2">No projects yet</h3>
-              <p className="text-muted-foreground">
-                Check back later for updates!
-              </p>
+              )}
             </div>
-          )}
-        </div>
+          </TabsContent>
+
+          <TabsContent value="roadmaps" className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {roadmaps.map((roadmap) => (
+                <RoadmapCard key={roadmap.id} roadmap={roadmap} />
+              ))}
+              {roadmaps.length === 0 && (
+                <div className="col-span-full text-center py-20 bg-muted/20 rounded-lg">
+                  <h3 className="text-2xl font-semibold mb-2">
+                    No roadmaps yet
+                  </h3>
+                  <p className="text-muted-foreground">
+                    Check back later for updates!
+                  </p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </main>
 
       <footer className="border-t py-8 mt-12 bg-muted/40">

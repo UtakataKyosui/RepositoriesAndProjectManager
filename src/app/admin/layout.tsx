@@ -1,8 +1,8 @@
 import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { getSession } from "@/lib/session";
 import UserButton from "@/components/auth/user-button";
+import { getSession } from "@/lib/session";
 
 export default async function AdminLayout({
   children,
