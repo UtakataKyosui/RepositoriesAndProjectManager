@@ -4,6 +4,7 @@ import {
   Background,
   Controls,
   type Edge,
+  Handle,
   MarkerType,
   MiniMap,
   type Node,
@@ -33,12 +34,24 @@ const nodeHeight = 80;
 
 const elk = new ELK();
 
-function CustomNode({ data }: { data: { label: string; order: number } }) {
+function CustomNode({
+  data,
+  isConnectable,
+}: {
+  data: { label: string; order: number };
+  isConnectable: boolean;
+}) {
   return (
     <div
-      className="rounded-lg p-3 bg-card border-2 border-primary shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-center h-full"
+      className="rounded-lg p-3 bg-card border-2 border-primary shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-center h-full relative"
       style={{ width: nodeWidth, height: nodeHeight }}
     >
+      <Handle
+        type="target"
+        position={Position.Left}
+        isConnectable={isConnectable}
+        className="invisible"
+      />
       <div className="flex items-center gap-2 mb-1">
         <Box className="h-4 w-4 text-primary" />
         <span className="text-xs font-bold text-muted-foreground">
@@ -48,6 +61,12 @@ function CustomNode({ data }: { data: { label: string; order: number } }) {
       <div className="font-semibold text-sm line-clamp-2 leading-tight">
         {data.label}
       </div>
+      <Handle
+        type="source"
+        position={Position.Right}
+        isConnectable={isConnectable}
+        className="invisible"
+      />
     </div>
   );
 }
