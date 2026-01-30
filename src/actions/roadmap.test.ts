@@ -6,11 +6,16 @@ import {
   addRoadmapGoal,
   createRoadmap,
   deleteRoadmap,
+  deleteRoadmapGoal,
   getMyRoadmaps,
+  getPublicRoadmaps,
   getRoadmap,
   removeProjectFromRoadmap,
+  reorderRoadmapGoals,
+  reorderRoadmapProjects,
   toggleRoadmapGoal,
   updateRoadmap,
+  updateRoadmapGoal,
 } from "./roadmap";
 
 // Mock dependencies
@@ -26,14 +31,21 @@ vi.mock("@/lib/prisma", () => ({
     roadmapGoal: {
       create: vi.fn(),
       update: vi.fn(),
+      delete: vi.fn(),
       findFirst: vi.fn(),
     },
     roadmapProject: {
       create: vi.fn(),
+      update: vi.fn(),
       delete: vi.fn(),
       findFirst: vi.fn(),
     },
-    $transaction: vi.fn((callback) => callback(prisma)),
+    $transaction: vi.fn((arg) => {
+      if (Array.isArray(arg)) {
+        return Promise.all(arg);
+      }
+      return arg(prisma);
+    }),
   },
 }));
 
@@ -85,10 +97,31 @@ describe("Roadmap Actions", () => {
       // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
       (prisma.roadmap.findMany as any).mockResolvedValue(mockRoadmaps);
 
-      const result = await getMyRoadmaps();
+      const _result = await getMyRoadmaps();
 
       expect(prisma.roadmap.findMany).toHaveBeenCalledWith({
         where: { userId: mockUserId },
+        orderBy: { updatedAt: "desc" },
+        include: {
+          projects: { include: { project: true } },
+          goals: true,
+        },
+      });
+    });
+  });
+
+  describe("getPublicRoadmaps", () => {
+    it("should return all roadmaps ordered by updatedAt", async () => {
+      const mockRoadmaps = [
+        { id: "rm-1", title: "Map 1", userId: "user-1" },
+        { id: "rm-2", title: "Map 2", userId: "user-2" },
+      ];
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
+      (prisma.roadmap.findMany as any).mockResolvedValue(mockRoadmaps);
+
+      const result = await getPublicRoadmaps();
+
+      expect(prisma.roadmap.findMany).toHaveBeenCalledWith({
         orderBy: { updatedAt: "desc" },
         include: {
           projects: { include: { project: true } },
@@ -228,6 +261,71 @@ describe("Roadmap Actions", () => {
             projectId: "proj-1",
           },
         },
+      });
+    });
+    it("should reorder projects", async () => {
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
+      (prisma.roadmap.findUnique as any).mockResolvedValue({
+        id: "rm-1",
+        userId: mockUserId,
+        projects: [
+          { projectId: "p-1", order: 0 },
+          { projectId: "p-2", order: 1 },
+        ],
+      });
+
+      await reorderRoadmapProjects("rm-1", ["p-2", "p-1"]);
+
+      expect(prisma.$transaction).toHaveBeenCalled();
+    });
+
+    it("should reorder goals", async () => {
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
+      (prisma.roadmap.findUnique as any).mockResolvedValue({
+        id: "rm-1",
+        userId: mockUserId,
+        goals: [
+          { id: "g-1", order: 0 },
+          { id: "g-2", order: 1 },
+        ],
+      });
+
+      await reorderRoadmapGoals("rm-1", ["g-2", "g-1"]);
+
+      expect(prisma.$transaction).toHaveBeenCalled();
+    });
+
+    it("should update a goal", async () => {
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
+      (prisma.roadmapGoal.findFirst as any).mockResolvedValue({
+        id: "g-1",
+        roadmap: { userId: mockUserId },
+      });
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
+      (prisma.roadmapGoal.update as any).mockResolvedValue({
+        id: "g-1",
+        content: "Updated Content",
+      });
+
+      await updateRoadmapGoal("g-1", "Updated Content");
+
+      expect(prisma.roadmapGoal.update).toHaveBeenCalledWith({
+        where: { id: "g-1" },
+        data: { content: "Updated Content" },
+      });
+    });
+
+    it("should delete a goal", async () => {
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking needs any
+      (prisma.roadmapGoal.findFirst as any).mockResolvedValue({
+        id: "g-1",
+        roadmap: { userId: mockUserId },
+      });
+
+      await deleteRoadmapGoal("g-1");
+
+      expect(prisma.roadmapGoal.delete).toHaveBeenCalledWith({
+        where: { id: "g-1" },
       });
     });
   });

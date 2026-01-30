@@ -8,7 +8,6 @@ vi.mock("@vercel/sdk", () => {
   return {
     Vercel: class {
       constructor() {
-        // @ts-expect-error
         // biome-ignore lint/correctness/noConstructorReturn: mocking sdk for tests
         return {
           projects: {

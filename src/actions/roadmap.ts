@@ -45,6 +45,20 @@ export async function getMyRoadmaps() {
   });
 }
 
+export async function getPublicRoadmaps() {
+  return await prisma.roadmap.findMany({
+    orderBy: { updatedAt: "desc" },
+    include: {
+      projects: {
+        include: {
+          project: true,
+        },
+      },
+      goals: true,
+    },
+  });
+}
+
 export async function getRoadmap(id: string) {
   const session = await getSession();
   if (!session?.user) {
@@ -225,4 +239,113 @@ export async function removeProjectFromRoadmap(
   });
 
   revalidatePath(`/roadmap/${roadmapId}`);
+}
+
+export async function reorderRoadmapProjects(
+  roadmapId: string,
+  projectIds: string[],
+) {
+  const session = await getSession();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const roadmap = await prisma.roadmap.findUnique({
+    where: { id: roadmapId, userId: session.user.id },
+  });
+  if (!roadmap) {
+    throw new Error("Roadmap not found");
+  }
+
+  await prisma.$transaction(
+    projectIds.map((projectId, index) =>
+      prisma.roadmapProject.update({
+        where: {
+          roadmapId_projectId: {
+            roadmapId,
+            projectId,
+          },
+        },
+        data: { order: index },
+      }),
+    ),
+  );
+
+  revalidatePath(`/roadmap/${roadmapId}`);
+}
+
+export async function reorderRoadmapGoals(
+  roadmapId: string,
+  goalIds: string[],
+) {
+  const session = await getSession();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const roadmap = await prisma.roadmap.findUnique({
+    where: { id: roadmapId, userId: session.user.id },
+  });
+  if (!roadmap) {
+    throw new Error("Roadmap not found");
+  }
+
+  await prisma.$transaction(
+    goalIds.map((goalId, index) =>
+      prisma.roadmapGoal.update({
+        where: { id: goalId },
+        data: { order: index },
+      }),
+    ),
+  );
+
+  revalidatePath(`/roadmap/${roadmapId}`);
+}
+
+export async function updateRoadmapGoal(goalId: string, content: string) {
+  const session = await getSession();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const goal = await prisma.roadmapGoal.findFirst({
+    where: {
+      id: goalId,
+      roadmap: { userId: session.user.id },
+    },
+  });
+  if (!goal) {
+    throw new Error("Goal not found");
+  }
+
+  const updated = await prisma.roadmapGoal.update({
+    where: { id: goalId },
+    data: { content },
+  });
+
+  revalidatePath(`/roadmap/${goal.roadmapId}`);
+  return updated;
+}
+
+export async function deleteRoadmapGoal(goalId: string) {
+  const session = await getSession();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const goal = await prisma.roadmapGoal.findFirst({
+    where: {
+      id: goalId,
+      roadmap: { userId: session.user.id },
+    },
+  });
+  if (!goal) {
+    throw new Error("Goal not found");
+  }
+
+  await prisma.roadmapGoal.delete({
+    where: { id: goalId },
+  });
+
+  revalidatePath(`/roadmap/${goal.roadmapId}`);
 }
