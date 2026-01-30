@@ -11,6 +11,14 @@ export default function Header() {
           </h1>
         </Link>
         <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-4">
+            <Link
+              href="/roadmap"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Roadmap
+            </Link>
+          </nav>
           <UserButton />
         </div>
       </div>
