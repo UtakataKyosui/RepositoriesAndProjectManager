@@ -22,12 +22,14 @@ export function RoadmapGraphSection({
       </CardHeader>
       <CardContent className="flex-1 min-h-[500px] bg-muted/10 rounded-md p-0 overflow-hidden relative">
         <RoadmapGraphWrapper
-          projects={projects.map((p) => ({
-            id: p.project.id,
-            title: p.project.title,
-            order: p.order,
-            description: p.project.description,
-          }))}
+          projects={projects
+            .sort((a, b) => a.order - b.order)
+            .map((p) => ({
+              id: p.project.id,
+              title: p.project.title,
+              order: p.order,
+              description: p.project.description,
+            }))}
           goals={goals.sort((a, b) => a.order - b.order)}
         />
       </CardContent>

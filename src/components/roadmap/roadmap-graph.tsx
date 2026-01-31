@@ -247,6 +247,28 @@ export function RoadmapGraph({ projects, goals }: RoadmapGraphProps) {
         });
       }
 
+      // 5. Connect Last Project to First Goal
+      if (projects.length > 0 && goals.length > 0) {
+        initialEdges.push({
+          id: `e-proj-to-goal`,
+          source: projects[projects.length - 1].id,
+          target: goals[0].id,
+          type: "smoothstep",
+          animated: true,
+          style: {
+            stroke: "#64748b",
+            strokeWidth: 2,
+            strokeDasharray: "5 5",
+          },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            width: 20,
+            height: 20,
+            color: "#64748b",
+          },
+        });
+      }
+
       const { nodes: lNodes, edges: lEdges } = await getLayoutedElements(
         initialNodes,
         initialEdges,
