@@ -3,8 +3,10 @@
 import { Check, Loader2, Pencil, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { updateRoadmap } from "@/actions/roadmap";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
 import type { Roadmap } from "@/lib/zod";
@@ -13,6 +15,7 @@ type RoadmapDetailsEditorProps = {
   id: string;
   initialTitle: Roadmap["title"];
   initialDescription: Roadmap["description"];
+  initialPublished: boolean;
   isOwner: boolean;
 };
 
@@ -20,23 +23,33 @@ export function RoadmapDetailsEditor({
   id,
   initialTitle,
   initialDescription,
+  initialPublished,
   isOwner,
 }: RoadmapDetailsEditorProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription || "");
+  const [published, setPublished] = useState(initialPublished);
   const [isPending, startTransition] = useTransition();
 
   const handleSave = () => {
     startTransition(async () => {
-      await updateRoadmap(id, { title, description });
+      await updateRoadmap(id, { title, description, published });
       setIsEditing(false);
+    });
+  };
+
+  const handlePublishedToggle = (checked: boolean) => {
+    setPublished(checked);
+    startTransition(async () => {
+      await updateRoadmap(id, { title, description, published: checked });
     });
   };
 
   const handleCancel = () => {
     setTitle(initialTitle);
     setDescription(initialDescription || "");
+    setPublished(initialPublished);
     setIsEditing(false);
   };
 
@@ -67,6 +80,20 @@ export function RoadmapDetailsEditor({
             className="min-h-[100px]"
             disabled={isPending}
           />
+          <div className="flex items-center gap-3 pt-2">
+            <Switch
+              id="published"
+              checked={published}
+              onCheckedChange={setPublished}
+              disabled={isPending}
+            />
+            <label
+              htmlFor="published"
+              className="text-sm font-medium cursor-pointer"
+            >
+              Published
+            </label>
+          </div>
         </div>
         <div className="flex gap-2 justify-end">
           <Button
@@ -104,10 +131,30 @@ export function RoadmapDetailsEditor({
           <span className="sr-only">Edit</span>
         </Button>
       </div>
-      <h1 className="text-3xl font-bold mb-2 pr-10">{title}</h1>
+      <div className="flex items-center gap-3 mb-2">
+        <h1 className="text-3xl font-bold pr-10">{title}</h1>
+        <Badge variant={published ? "default" : "secondary"}>
+          {published ? "Published" : "Draft"}
+        </Badge>
+      </div>
       <p className="text-muted-foreground min-h-[1.5em] whitespace-pre-wrap">
         {description}
       </p>
+      <div className="flex items-center gap-3 mt-4">
+        <Switch
+          id="published-toggle"
+          checked={published}
+          onCheckedChange={handlePublishedToggle}
+          disabled={isPending}
+        />
+        <label
+          htmlFor="published-toggle"
+          className="text-sm font-medium cursor-pointer"
+        >
+          {published ? "Public" : "Private"}
+        </label>
+        {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
+      </div>
     </div>
   );
 }
