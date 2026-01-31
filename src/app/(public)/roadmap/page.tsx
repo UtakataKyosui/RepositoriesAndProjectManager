@@ -1,20 +1,14 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { getMyRoadmaps } from "@/actions/roadmap";
+import { getPublicRoadmaps } from "@/actions/roadmap";
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";
-import { getSession } from "@/lib/auth/session";
 
 // ビルド時ではなくリクエスト時にデータベースアクセスする
 
 export default async function RoadmapPage() {
   await connection();
-  const session = await getSession();
-  if (!session?.user) {
-    // Or redirect to login
-    redirect("/");
-  }
 
-  const roadmaps = await getMyRoadmaps();
+  const roadmaps = await getPublicRoadmaps();
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -22,7 +16,7 @@ export default async function RoadmapPage() {
         <section className="flex justify-between items-center mb-16">
           <div className="space-y-4">
             <h2 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-              My Roadmaps
+              Roadmaps
             </h2>
             <p className="text-muted-foreground">
               Manage your project goals and milestones.
