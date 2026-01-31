@@ -20,21 +20,26 @@ import { Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+import type { ProjectStatus } from "@prisma/client";
+
 type DependencyGraphProps = {
   currentProject: {
     id: string;
     title: string;
     description: string | null;
+    status: ProjectStatus;
   };
   dependencies: {
     id: string;
     title: string;
     description: string | null;
+    status: ProjectStatus;
   }[]; // Projects I depend on (Outgoing)
   dependents: {
     id: string;
     title: string;
     description: string | null;
+    status: ProjectStatus;
   }[]; // Projects that depend on me (Incoming)
 };
 
@@ -42,6 +47,7 @@ type NodeData = {
   label: string;
   description?: string | null;
   nodeType: "current" | "dependency" | "dependent";
+  status: ProjectStatus;
 };
 
 const nodeWidth = 220;
@@ -51,9 +57,18 @@ const elk = new ELK();
 
 // カスタムノードコンポーネント
 function CustomNode({ data }: { data: NodeData }) {
-  const { label, description, nodeType } = data;
+  const { label, description, nodeType, status } = data;
 
   const getNodeStyles = () => {
+    // DONEステータスの場合は緑背景・白文字を優先
+    if (status === "DONE") {
+      return "bg-green-600 text-white border-2 border-green-700 shadow-lg";
+    }
+    // IN_PROGRESSの場合
+    if (status === "IN_PROGRESS") {
+      return "bg-blue-100 text-blue-900 border-2 border-blue-500 shadow-md";
+    }
+    // TODOの場合は従来のnodeType別スタイル
     switch (nodeType) {
       case "current":
         return "bg-primary text-primary-foreground border-2 border-primary shadow-lg";
@@ -75,6 +90,17 @@ function CustomNode({ data }: { data: NodeData }) {
     }
   };
 
+  const getStatusLabel = () => {
+    switch (status) {
+      case "DONE":
+        return "Done";
+      case "IN_PROGRESS":
+        return "In Progress";
+      default:
+        return "TODO";
+    }
+  };
+
   return (
     <div
       className={`rounded-lg p-3 ${getNodeStyles()} transition-all hover:shadow-xl cursor-pointer flex flex-col`}
@@ -83,11 +109,26 @@ function CustomNode({ data }: { data: NodeData }) {
       <div className="flex items-center gap-2 mb-2 shrink-0">
         <Box className="h-4 w-4" />
         <span className="text-xs font-medium opacity-75">{getLabel()}</span>
+        <span
+          className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+            status === "DONE"
+              ? "bg-white/20 text-white"
+              : status === "IN_PROGRESS"
+                ? "bg-blue-200 text-blue-800"
+                : "bg-muted text-muted-foreground"
+          }`}
+        >
+          {getStatusLabel()}
+        </span>
       </div>
       <div className="font-semibold text-sm line-clamp-1 break-words shrink-0 mb-2">
         {label}
       </div>
-      <ScrollArea className="flex-1 w-full opacity-80 rounded-md border bg-background/10 p-1">
+      <ScrollArea
+        className={`flex-1 w-full opacity-80 rounded-md border p-1 ${
+          status === "DONE" ? "bg-white/10 border-white/20" : "bg-background/10"
+        }`}
+      >
         <p className="text-[10px] leading-tight break-words whitespace-pre-wrap">
           {description || "No description"}
         </p>
@@ -162,6 +203,7 @@ export function DependencyGraph({
           label: currentProject.title,
           description: currentProject.description,
           nodeType: "current",
+          status: currentProject.status,
         },
         position: { x: 0, y: 0 },
       });
@@ -175,6 +217,7 @@ export function DependencyGraph({
             label: dep.title,
             description: dep.description,
             nodeType: "dependency",
+            status: dep.status,
           },
           position: { x: 0, y: 0 },
         });
@@ -203,6 +246,7 @@ export function DependencyGraph({
             label: dep.title,
             description: dep.description,
             nodeType: "dependent",
+            status: dep.status,
           },
           position: { x: 0, y: 0 },
         });

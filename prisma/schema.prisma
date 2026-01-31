@@ -9,11 +9,10 @@ generator client {
 }
 
 generator zod {
-  provider          = "zod-prisma-types"
-  output            = "../src/lib/zod" 
-  useMultipleFiles  = true
-  writeBarrelFiles  = true
-  useTypeAssertions = true
+  provider                  = "prisma-zod-generator"
+  output                    = "../src/lib/zod"
+  isGenerateSelect          = true
+  isGenerateInclude         = true
 }
 
 datasource db {
@@ -81,15 +80,22 @@ model Verification {
   @@map("verification")
 }
 
+enum ProjectStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
 model Project {
-  id          String       @id @default(cuid())
+  id          String        @id @default(cuid())
   title       String
   description String?
-  published   Boolean      @default(false)
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  published   Boolean       @default(false)
+  status      ProjectStatus @default(TODO)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   userId      String
-  user        User         @relation(fields: [userId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
   repositories Repository[]
   dependencies ProjectDependency[] @relation("dependency")
   dependents   ProjectDependency[] @relation("dependent")
@@ -119,14 +125,15 @@ model ProjectDependency {
 }
 
 model Roadmap {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   title       String
   description String?
-  published   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  published   Boolean       @default(false)
+  status      ProjectStatus @default(TODO)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   goals    RoadmapGoal[]
   projects RoadmapProject[]

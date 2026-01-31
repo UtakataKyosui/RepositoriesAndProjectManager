@@ -1,4 +1,4 @@
-import type { Project, ProjectDependency, Repository } from "@/lib/zod";
+import type { Project, ProjectDependency, Repository } from "@prisma/client";
 
 export type ProjectWithRepositories = Project & {
   repositories: Repository[];

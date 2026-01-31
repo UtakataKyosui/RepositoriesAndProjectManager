@@ -1,0 +1,10 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { ProjectDependencyOrderByWithRelationInputObjectSchema as ProjectDependencyOrderByWithRelationInputObjectSchema } from './objects/ProjectDependencyOrderByWithRelationInput.schema';
+import { ProjectDependencyWhereInputObjectSchema as ProjectDependencyWhereInputObjectSchema } from './objects/ProjectDependencyWhereInput.schema';
+import { ProjectDependencyWhereUniqueInputObjectSchema as ProjectDependencyWhereUniqueInputObjectSchema } from './objects/ProjectDependencyWhereUniqueInput.schema';
+import { ProjectDependencyCountAggregateInputObjectSchema as ProjectDependencyCountAggregateInputObjectSchema } from './objects/ProjectDependencyCountAggregateInput.schema';
+
+export const ProjectDependencyCountSchema: z.ZodType<Prisma.ProjectDependencyCountArgs> = z.object({ orderBy: z.union([ProjectDependencyOrderByWithRelationInputObjectSchema, ProjectDependencyOrderByWithRelationInputObjectSchema.array()]).optional(), where: ProjectDependencyWhereInputObjectSchema.optional(), cursor: ProjectDependencyWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), select: z.union([ z.literal(true), ProjectDependencyCountAggregateInputObjectSchema ]).optional() }).strict() as unknown as z.ZodType<Prisma.ProjectDependencyCountArgs>;
+
+export const ProjectDependencyCountZodSchema = z.object({ orderBy: z.union([ProjectDependencyOrderByWithRelationInputObjectSchema, ProjectDependencyOrderByWithRelationInputObjectSchema.array()]).optional(), where: ProjectDependencyWhereInputObjectSchema.optional(), cursor: ProjectDependencyWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), select: z.union([ z.literal(true), ProjectDependencyCountAggregateInputObjectSchema ]).optional() }).strict();

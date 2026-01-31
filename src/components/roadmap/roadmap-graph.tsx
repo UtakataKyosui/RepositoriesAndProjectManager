@@ -20,7 +20,9 @@ import ELK from "elkjs/lib/elk.bundled.js";
 import { Box, Check, Circle, Flag } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import type { RoadmapGoal } from "@/lib/zod";
+import type { RoadmapGoal } from "@prisma/client";
+
+import type { ProjectStatus } from "@prisma/client";
 
 // Project Node logic
 type RoadmapGraphProps = {
@@ -29,6 +31,7 @@ type RoadmapGraphProps = {
     title: string;
     order: number;
     description: string | null;
+    status: ProjectStatus;
   }[];
   goals: RoadmapGoal[];
 };
@@ -42,12 +45,23 @@ function CustomNode({
   data,
   isConnectable,
 }: {
-  data: { label: string; order: number };
+  data: { label: string; order: number; status: ProjectStatus };
   isConnectable: boolean;
 }) {
+  const getStatusStyles = () => {
+    switch (data.status) {
+      case "DONE":
+        return "bg-green-600 text-white border-green-700";
+      case "IN_PROGRESS":
+        return "bg-blue-100 border-blue-500 text-blue-900";
+      default: // TODO
+        return "bg-card border-primary";
+    }
+  };
+
   return (
     <div
-      className="rounded-lg p-3 bg-card border-2 border-primary shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-center h-full relative"
+      className={`rounded-lg p-3 border-2 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-center h-full relative ${getStatusStyles()}`}
       style={{ width: nodeWidth, height: nodeHeight }}
     >
       <Handle
@@ -57,8 +71,12 @@ function CustomNode({
         className="invisible"
       />
       <div className="flex items-center gap-2 mb-1">
-        <Box className="h-4 w-4 text-primary" />
-        <span className="text-xs font-bold text-muted-foreground">
+        <Box
+          className={`h-4 w-4 ${data.status === "DONE" ? "text-white" : "text-primary"}`}
+        />
+        <span
+          className={`text-xs font-bold ${data.status === "DONE" ? "text-white/80" : "text-muted-foreground"}`}
+        >
           Step {data.order}
         </span>
       </div>
@@ -184,7 +202,7 @@ export function RoadmapGraph({ projects, goals }: RoadmapGraphProps) {
       const projectNodes: Node[] = projects.map((p) => ({
         id: p.id,
         type: "custom",
-        data: { label: p.title, order: p.order },
+        data: { label: p.title, order: p.order, status: p.status },
         position: { x: 0, y: 0 },
       }));
 

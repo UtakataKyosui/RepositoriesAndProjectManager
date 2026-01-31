@@ -6,16 +6,26 @@ import { updateRoadmap } from "@/actions/roadmap";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
-import type { Roadmap } from "@/lib/zod";
+import type { ProjectStatus } from "@prisma/client";
+
+import type { Roadmap } from "@prisma/client";
 
 type RoadmapDetailsEditorProps = {
   id: string;
   initialTitle: Roadmap["title"];
   initialDescription: Roadmap["description"];
   initialPublished: boolean;
+  initialStatus: ProjectStatus;
   isOwner: boolean;
 };
 
@@ -24,17 +34,19 @@ export function RoadmapDetailsEditor({
   initialTitle,
   initialDescription,
   initialPublished,
+  initialStatus,
   isOwner,
 }: RoadmapDetailsEditorProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(initialTitle);
   const [description, setDescription] = useState(initialDescription || "");
   const [published, setPublished] = useState(initialPublished);
+  const [status, setStatus] = useState<ProjectStatus>(initialStatus);
   const [isPending, startTransition] = useTransition();
 
   const handleSave = () => {
     startTransition(async () => {
-      await updateRoadmap(id, { title, description, published });
+      await updateRoadmap(id, { title, description, published, status });
       setIsEditing(false);
     });
   };
@@ -50,6 +62,7 @@ export function RoadmapDetailsEditor({
     setTitle(initialTitle);
     setDescription(initialDescription || "");
     setPublished(initialPublished);
+    setStatus(initialStatus);
     setIsEditing(false);
   };
 
@@ -94,6 +107,23 @@ export function RoadmapDetailsEditor({
               Published
             </label>
           </div>
+          <div className="pt-2">
+            <label className="text-sm font-medium block mb-2">Status</label>
+            <Select
+              value={status}
+              onValueChange={(value) => setStatus(value as ProjectStatus)}
+              disabled={isPending}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="TODO">TODO</SelectItem>
+                <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                <SelectItem value="DONE">Done</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
         <div className="flex gap-2 justify-end">
           <Button
@@ -135,6 +165,28 @@ export function RoadmapDetailsEditor({
         <h1 className="text-3xl font-bold pr-10">{title}</h1>
         <Badge variant={published ? "default" : "secondary"}>
           {published ? "Published" : "Draft"}
+        </Badge>
+        <Badge
+          variant={
+            status === "DONE"
+              ? "default"
+              : status === "IN_PROGRESS"
+                ? "outline"
+                : "secondary"
+          }
+          className={
+            status === "DONE"
+              ? "bg-green-600 text-white hover:bg-green-700"
+              : status === "IN_PROGRESS"
+                ? "border-blue-500 text-blue-600"
+                : ""
+          }
+        >
+          {status === "TODO"
+            ? "TODO"
+            : status === "IN_PROGRESS"
+              ? "In Progress"
+              : "Done"}
         </Badge>
       </div>
       <p className="text-muted-foreground min-h-[1.5em] whitespace-pre-wrap">

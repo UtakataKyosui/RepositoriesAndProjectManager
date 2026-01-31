@@ -111,6 +111,7 @@ export async function updateRoadmap(id: string, data: any) {
       title: data.title,
       description: data.description,
       published: data.published,
+      status: data.status,
       // complex updates (projects/goals) handled separately or via nested writes
     },
     include: {

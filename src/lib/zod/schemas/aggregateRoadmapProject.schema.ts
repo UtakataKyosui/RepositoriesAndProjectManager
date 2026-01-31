@@ -1,0 +1,14 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { RoadmapProjectOrderByWithRelationInputObjectSchema as RoadmapProjectOrderByWithRelationInputObjectSchema } from './objects/RoadmapProjectOrderByWithRelationInput.schema';
+import { RoadmapProjectWhereInputObjectSchema as RoadmapProjectWhereInputObjectSchema } from './objects/RoadmapProjectWhereInput.schema';
+import { RoadmapProjectWhereUniqueInputObjectSchema as RoadmapProjectWhereUniqueInputObjectSchema } from './objects/RoadmapProjectWhereUniqueInput.schema';
+import { RoadmapProjectCountAggregateInputObjectSchema as RoadmapProjectCountAggregateInputObjectSchema } from './objects/RoadmapProjectCountAggregateInput.schema';
+import { RoadmapProjectMinAggregateInputObjectSchema as RoadmapProjectMinAggregateInputObjectSchema } from './objects/RoadmapProjectMinAggregateInput.schema';
+import { RoadmapProjectMaxAggregateInputObjectSchema as RoadmapProjectMaxAggregateInputObjectSchema } from './objects/RoadmapProjectMaxAggregateInput.schema';
+import { RoadmapProjectAvgAggregateInputObjectSchema as RoadmapProjectAvgAggregateInputObjectSchema } from './objects/RoadmapProjectAvgAggregateInput.schema';
+import { RoadmapProjectSumAggregateInputObjectSchema as RoadmapProjectSumAggregateInputObjectSchema } from './objects/RoadmapProjectSumAggregateInput.schema';
+
+export const RoadmapProjectAggregateSchema: z.ZodType<Prisma.RoadmapProjectAggregateArgs> = z.object({ orderBy: z.union([RoadmapProjectOrderByWithRelationInputObjectSchema, RoadmapProjectOrderByWithRelationInputObjectSchema.array()]).optional(), where: RoadmapProjectWhereInputObjectSchema.optional(), cursor: RoadmapProjectWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), RoadmapProjectCountAggregateInputObjectSchema ]).optional(), _min: RoadmapProjectMinAggregateInputObjectSchema.optional(), _max: RoadmapProjectMaxAggregateInputObjectSchema.optional(), _avg: RoadmapProjectAvgAggregateInputObjectSchema.optional(), _sum: RoadmapProjectSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RoadmapProjectAggregateArgs>;
+
+export const RoadmapProjectAggregateZodSchema = z.object({ orderBy: z.union([RoadmapProjectOrderByWithRelationInputObjectSchema, RoadmapProjectOrderByWithRelationInputObjectSchema.array()]).optional(), where: RoadmapProjectWhereInputObjectSchema.optional(), cursor: RoadmapProjectWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), RoadmapProjectCountAggregateInputObjectSchema ]).optional(), _min: RoadmapProjectMinAggregateInputObjectSchema.optional(), _max: RoadmapProjectMaxAggregateInputObjectSchema.optional(), _avg: RoadmapProjectAvgAggregateInputObjectSchema.optional(), _sum: RoadmapProjectSumAggregateInputObjectSchema.optional() }).strict();

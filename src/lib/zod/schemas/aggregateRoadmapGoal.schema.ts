@@ -1,0 +1,14 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { RoadmapGoalOrderByWithRelationInputObjectSchema as RoadmapGoalOrderByWithRelationInputObjectSchema } from './objects/RoadmapGoalOrderByWithRelationInput.schema';
+import { RoadmapGoalWhereInputObjectSchema as RoadmapGoalWhereInputObjectSchema } from './objects/RoadmapGoalWhereInput.schema';
+import { RoadmapGoalWhereUniqueInputObjectSchema as RoadmapGoalWhereUniqueInputObjectSchema } from './objects/RoadmapGoalWhereUniqueInput.schema';
+import { RoadmapGoalCountAggregateInputObjectSchema as RoadmapGoalCountAggregateInputObjectSchema } from './objects/RoadmapGoalCountAggregateInput.schema';
+import { RoadmapGoalMinAggregateInputObjectSchema as RoadmapGoalMinAggregateInputObjectSchema } from './objects/RoadmapGoalMinAggregateInput.schema';
+import { RoadmapGoalMaxAggregateInputObjectSchema as RoadmapGoalMaxAggregateInputObjectSchema } from './objects/RoadmapGoalMaxAggregateInput.schema';
+import { RoadmapGoalAvgAggregateInputObjectSchema as RoadmapGoalAvgAggregateInputObjectSchema } from './objects/RoadmapGoalAvgAggregateInput.schema';
+import { RoadmapGoalSumAggregateInputObjectSchema as RoadmapGoalSumAggregateInputObjectSchema } from './objects/RoadmapGoalSumAggregateInput.schema';
+
+export const RoadmapGoalAggregateSchema: z.ZodType<Prisma.RoadmapGoalAggregateArgs> = z.object({ orderBy: z.union([RoadmapGoalOrderByWithRelationInputObjectSchema, RoadmapGoalOrderByWithRelationInputObjectSchema.array()]).optional(), where: RoadmapGoalWhereInputObjectSchema.optional(), cursor: RoadmapGoalWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), RoadmapGoalCountAggregateInputObjectSchema ]).optional(), _min: RoadmapGoalMinAggregateInputObjectSchema.optional(), _max: RoadmapGoalMaxAggregateInputObjectSchema.optional(), _avg: RoadmapGoalAvgAggregateInputObjectSchema.optional(), _sum: RoadmapGoalSumAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RoadmapGoalAggregateArgs>;
+
+export const RoadmapGoalAggregateZodSchema = z.object({ orderBy: z.union([RoadmapGoalOrderByWithRelationInputObjectSchema, RoadmapGoalOrderByWithRelationInputObjectSchema.array()]).optional(), where: RoadmapGoalWhereInputObjectSchema.optional(), cursor: RoadmapGoalWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), RoadmapGoalCountAggregateInputObjectSchema ]).optional(), _min: RoadmapGoalMinAggregateInputObjectSchema.optional(), _max: RoadmapGoalMaxAggregateInputObjectSchema.optional(), _avg: RoadmapGoalAvgAggregateInputObjectSchema.optional(), _sum: RoadmapGoalSumAggregateInputObjectSchema.optional() }).strict();

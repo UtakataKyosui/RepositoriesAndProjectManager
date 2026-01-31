@@ -1,5 +1,6 @@
 "use server";
 
+import type { ProjectStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth/session";
 import prisma from "@/lib/db/prisma";
@@ -8,6 +9,7 @@ type CreateProjectInput = {
   title: string;
   description?: string;
   published: boolean;
+  status: ProjectStatus;
   repositories: {
     url: string;
     name: string;
@@ -44,6 +46,7 @@ export async function createProject(input: CreateProjectInput) {
       title: input.title,
       description: input.description,
       published: input.published,
+      status: input.status,
       userId: session.user.id,
       repositories: {
         create: input.repositories.map((repo) => ({
@@ -90,6 +93,7 @@ export async function updateProject(
       title: input.title,
       description: input.description,
       published: input.published,
+      status: input.status,
       repositories: {
         deleteMany: {}, // 既存を削除
         create: input.repositories.map((repo) => ({

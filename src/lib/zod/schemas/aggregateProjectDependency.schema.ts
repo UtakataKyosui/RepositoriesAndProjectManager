@@ -1,0 +1,12 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { ProjectDependencyOrderByWithRelationInputObjectSchema as ProjectDependencyOrderByWithRelationInputObjectSchema } from './objects/ProjectDependencyOrderByWithRelationInput.schema';
+import { ProjectDependencyWhereInputObjectSchema as ProjectDependencyWhereInputObjectSchema } from './objects/ProjectDependencyWhereInput.schema';
+import { ProjectDependencyWhereUniqueInputObjectSchema as ProjectDependencyWhereUniqueInputObjectSchema } from './objects/ProjectDependencyWhereUniqueInput.schema';
+import { ProjectDependencyCountAggregateInputObjectSchema as ProjectDependencyCountAggregateInputObjectSchema } from './objects/ProjectDependencyCountAggregateInput.schema';
+import { ProjectDependencyMinAggregateInputObjectSchema as ProjectDependencyMinAggregateInputObjectSchema } from './objects/ProjectDependencyMinAggregateInput.schema';
+import { ProjectDependencyMaxAggregateInputObjectSchema as ProjectDependencyMaxAggregateInputObjectSchema } from './objects/ProjectDependencyMaxAggregateInput.schema';
+
+export const ProjectDependencyAggregateSchema: z.ZodType<Prisma.ProjectDependencyAggregateArgs> = z.object({ orderBy: z.union([ProjectDependencyOrderByWithRelationInputObjectSchema, ProjectDependencyOrderByWithRelationInputObjectSchema.array()]).optional(), where: ProjectDependencyWhereInputObjectSchema.optional(), cursor: ProjectDependencyWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), ProjectDependencyCountAggregateInputObjectSchema ]).optional(), _min: ProjectDependencyMinAggregateInputObjectSchema.optional(), _max: ProjectDependencyMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.ProjectDependencyAggregateArgs>;
+
+export const ProjectDependencyAggregateZodSchema = z.object({ orderBy: z.union([ProjectDependencyOrderByWithRelationInputObjectSchema, ProjectDependencyOrderByWithRelationInputObjectSchema.array()]).optional(), where: ProjectDependencyWhereInputObjectSchema.optional(), cursor: ProjectDependencyWhereUniqueInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), _count: z.union([ z.literal(true), ProjectDependencyCountAggregateInputObjectSchema ]).optional(), _min: ProjectDependencyMinAggregateInputObjectSchema.optional(), _max: ProjectDependencyMaxAggregateInputObjectSchema.optional() }).strict();

@@ -1,4 +1,9 @@
-import type { Project, Roadmap, RoadmapGoal, RoadmapProject } from "@/lib/zod";
+import type {
+  Project,
+  Roadmap,
+  RoadmapGoal,
+  RoadmapProject,
+} from "@prisma/client";
 
 export type RoadmapProjectWithProject = RoadmapProject & {
   project: Project;

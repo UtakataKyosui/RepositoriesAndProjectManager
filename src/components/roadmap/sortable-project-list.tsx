@@ -23,7 +23,7 @@ import { useEffect, useState, useTransition } from "react";
 import { reorderRoadmapProjects } from "@/actions/roadmap";
 import { Button } from "@/components/ui/button";
 
-import type { RoadmapProject } from "@/lib/zod";
+import type { RoadmapProject } from "@prisma/client";
 
 type SortableProject = Pick<RoadmapProject, "projectId"> & {
   title: string;

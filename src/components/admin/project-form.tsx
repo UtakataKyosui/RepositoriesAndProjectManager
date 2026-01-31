@@ -22,7 +22,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+
+import type { ProjectStatus } from "@prisma/client";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -30,6 +39,7 @@ const formSchema = z.object({
   }),
   description: z.string().optional(),
   published: z.boolean(),
+  status: z.enum(["TODO", "IN_PROGRESS", "DONE"]),
   repositoryUrls: z.array(z.string()).max(5, {
     message: "You can select up to 5 repositories.",
   }),
@@ -44,6 +54,7 @@ type ProjectFormProps = {
     title: string;
     description?: string | null;
     published: boolean;
+    status: ProjectStatus;
     repositories: {
       url: string;
       name: string;
@@ -68,6 +79,7 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
       title: initialData?.title || "",
       description: initialData?.description || "",
       published: initialData?.published || false,
+      status: initialData?.status || "TODO",
       repositoryUrls: initialData?.repositories.map((r) => r.url) || [],
       dependencyIds:
         initialData?.dependencies?.map((d) => d.dependencyId) || [],
@@ -162,6 +174,7 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
           title: values.title,
           description: values.description,
           published: values.published,
+          status: values.status,
           repositories: repositories,
           dependencyIds: values.dependencyIds,
         });
@@ -172,6 +185,7 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
           title: values.title,
           description: values.description,
           published: values.published,
+          status: values.status,
           repositories: repositories,
           dependencyIds: values.dependencyIds,
         });
@@ -231,6 +245,32 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
                   This project will be visible to the public.
                 </FormDescription>
               </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="status"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="TODO">TODO</SelectItem>
+                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                  <SelectItem value="DONE">Done</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                Current status of this project.
+              </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />

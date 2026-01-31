@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { RepositoryWhereInputObjectSchema as RepositoryWhereInputObjectSchema } from './objects/RepositoryWhereInput.schema';
+import { RepositoryOrderByWithAggregationInputObjectSchema as RepositoryOrderByWithAggregationInputObjectSchema } from './objects/RepositoryOrderByWithAggregationInput.schema';
+import { RepositoryScalarWhereWithAggregatesInputObjectSchema as RepositoryScalarWhereWithAggregatesInputObjectSchema } from './objects/RepositoryScalarWhereWithAggregatesInput.schema';
+import { RepositoryScalarFieldEnumSchema } from './enums/RepositoryScalarFieldEnum.schema';
+import { RepositoryCountAggregateInputObjectSchema as RepositoryCountAggregateInputObjectSchema } from './objects/RepositoryCountAggregateInput.schema';
+import { RepositoryMinAggregateInputObjectSchema as RepositoryMinAggregateInputObjectSchema } from './objects/RepositoryMinAggregateInput.schema';
+import { RepositoryMaxAggregateInputObjectSchema as RepositoryMaxAggregateInputObjectSchema } from './objects/RepositoryMaxAggregateInput.schema';
+
+export const RepositoryGroupBySchema: z.ZodType<Prisma.RepositoryGroupByArgs> = z.object({ where: RepositoryWhereInputObjectSchema.optional(), orderBy: z.union([RepositoryOrderByWithAggregationInputObjectSchema, RepositoryOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RepositoryScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RepositoryScalarFieldEnumSchema), _count: z.union([ z.literal(true), RepositoryCountAggregateInputObjectSchema ]).optional(), _min: RepositoryMinAggregateInputObjectSchema.optional(), _max: RepositoryMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.RepositoryGroupByArgs>;
+
+export const RepositoryGroupByZodSchema = z.object({ where: RepositoryWhereInputObjectSchema.optional(), orderBy: z.union([RepositoryOrderByWithAggregationInputObjectSchema, RepositoryOrderByWithAggregationInputObjectSchema.array()]).optional(), having: RepositoryScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(RepositoryScalarFieldEnumSchema), _count: z.union([ z.literal(true), RepositoryCountAggregateInputObjectSchema ]).optional(), _min: RepositoryMinAggregateInputObjectSchema.optional(), _max: RepositoryMaxAggregateInputObjectSchema.optional() }).strict();

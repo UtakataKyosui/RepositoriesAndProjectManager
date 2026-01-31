@@ -1,7 +1,7 @@
 import { RoadmapGraphWrapper } from "@/components/roadmap/roadmap-graph-wrapper";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import type { RoadmapGoal } from "@/lib/zod";
+import type { RoadmapGoal } from "@prisma/client";
 import type { RoadmapProjectWithProject } from "@/types/roadmap";
 
 type GraphProject = RoadmapProjectWithProject;
@@ -29,6 +29,7 @@ export function RoadmapGraphSection({
               title: p.project.title,
               order: p.order,
               description: p.project.description,
+              status: p.project.status,
             }))}
           goals={goals.sort((a, b) => a.order - b.order)}
         />

@@ -50,6 +50,7 @@ export default async function AdminRoadmapDetailPage({
               initialTitle={roadmap.title}
               initialDescription={roadmap.description}
               initialPublished={roadmap.published}
+              initialStatus={roadmap.status}
               isOwner={isOwner}
             />
           </div>

@@ -45,6 +45,7 @@ export default async function EditProjectPage({ params }: PageProps) {
           title: project.title,
           description: project.description,
           published: project.published,
+          status: project.status,
           repositories: project.repositories.map((r) => ({
             url: r.url,
             name: r.name ?? "",

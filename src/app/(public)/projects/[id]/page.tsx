@@ -321,13 +321,20 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                             id: project.id,
                             title: project.title,
                             description: project.description,
+                            status: project.status,
                           }}
-                          dependencies={project.dependents.map(
-                            (d) => d.dependency,
-                          )}
-                          dependents={project.dependencies.map(
-                            (d) => d.dependent,
-                          )}
+                          dependencies={project.dependents.map((d) => ({
+                            id: d.dependency.id,
+                            title: d.dependency.title,
+                            description: d.dependency.description,
+                            status: d.dependency.status,
+                          }))}
+                          dependents={project.dependencies.map((d) => ({
+                            id: d.dependent.id,
+                            title: d.dependent.title,
+                            description: d.dependent.description,
+                            status: d.dependent.status,
+                          }))}
                         />
                       ) : (
                         <div className="py-12 text-center text-muted-foreground">

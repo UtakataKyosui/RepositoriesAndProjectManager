@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import type { Project } from "@/lib/zod";
+import type { Project } from "@prisma/client";
 
 type ManageProjectsDialogProps = {
   roadmapId: string;

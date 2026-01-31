@@ -1,0 +1,13 @@
+import type { Prisma } from '@prisma/client';
+import * as z from 'zod';
+import { ProjectDependencyWhereInputObjectSchema as ProjectDependencyWhereInputObjectSchema } from './objects/ProjectDependencyWhereInput.schema';
+import { ProjectDependencyOrderByWithAggregationInputObjectSchema as ProjectDependencyOrderByWithAggregationInputObjectSchema } from './objects/ProjectDependencyOrderByWithAggregationInput.schema';
+import { ProjectDependencyScalarWhereWithAggregatesInputObjectSchema as ProjectDependencyScalarWhereWithAggregatesInputObjectSchema } from './objects/ProjectDependencyScalarWhereWithAggregatesInput.schema';
+import { ProjectDependencyScalarFieldEnumSchema } from './enums/ProjectDependencyScalarFieldEnum.schema';
+import { ProjectDependencyCountAggregateInputObjectSchema as ProjectDependencyCountAggregateInputObjectSchema } from './objects/ProjectDependencyCountAggregateInput.schema';
+import { ProjectDependencyMinAggregateInputObjectSchema as ProjectDependencyMinAggregateInputObjectSchema } from './objects/ProjectDependencyMinAggregateInput.schema';
+import { ProjectDependencyMaxAggregateInputObjectSchema as ProjectDependencyMaxAggregateInputObjectSchema } from './objects/ProjectDependencyMaxAggregateInput.schema';
+
+export const ProjectDependencyGroupBySchema: z.ZodType<Prisma.ProjectDependencyGroupByArgs> = z.object({ where: ProjectDependencyWhereInputObjectSchema.optional(), orderBy: z.union([ProjectDependencyOrderByWithAggregationInputObjectSchema, ProjectDependencyOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ProjectDependencyScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ProjectDependencyScalarFieldEnumSchema), _count: z.union([ z.literal(true), ProjectDependencyCountAggregateInputObjectSchema ]).optional(), _min: ProjectDependencyMinAggregateInputObjectSchema.optional(), _max: ProjectDependencyMaxAggregateInputObjectSchema.optional() }).strict() as unknown as z.ZodType<Prisma.ProjectDependencyGroupByArgs>;
+
+export const ProjectDependencyGroupByZodSchema = z.object({ where: ProjectDependencyWhereInputObjectSchema.optional(), orderBy: z.union([ProjectDependencyOrderByWithAggregationInputObjectSchema, ProjectDependencyOrderByWithAggregationInputObjectSchema.array()]).optional(), having: ProjectDependencyScalarWhereWithAggregatesInputObjectSchema.optional(), take: z.number().optional(), skip: z.number().optional(), by: z.array(ProjectDependencyScalarFieldEnumSchema), _count: z.union([ z.literal(true), ProjectDependencyCountAggregateInputObjectSchema ]).optional(), _min: ProjectDependencyMinAggregateInputObjectSchema.optional(), _max: ProjectDependencyMaxAggregateInputObjectSchema.optional() }).strict();
