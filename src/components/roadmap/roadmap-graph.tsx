@@ -16,13 +16,11 @@ import {
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
+
+import type { ProjectStatus, RoadmapGoal } from "@prisma/client";
 import ELK from "elkjs/lib/elk.bundled.js";
-import { Box, Check, Circle, Flag } from "lucide-react";
+import { Box, Check, Flag } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-import type { RoadmapGoal } from "@prisma/client";
-
-import type { ProjectStatus } from "@prisma/client";
 
 // Project Node logic
 type RoadmapGraphProps = {

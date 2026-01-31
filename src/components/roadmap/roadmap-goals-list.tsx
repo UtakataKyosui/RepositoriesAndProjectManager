@@ -1,7 +1,6 @@
+import type { RoadmapGoal } from "@prisma/client";
 import { Check, Circle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-import type { RoadmapGoal } from "@prisma/client";
 
 type RoadmapGoalsListProps = {
   goals: RoadmapGoal[];

@@ -1,5 +1,3 @@
-import type React from "react";
-
 type RoadmapHeaderProps = {
   title: string;
   description: string | null;

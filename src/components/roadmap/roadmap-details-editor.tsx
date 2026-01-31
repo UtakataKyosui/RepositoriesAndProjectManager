@@ -1,5 +1,6 @@
 "use client";
 
+import type { ProjectStatus, Roadmap } from "@prisma/client";
 import { Check, Loader2, Pencil, X } from "lucide-react";
 import { useState, useTransition } from "react";
 import { updateRoadmap } from "@/actions/roadmap";
@@ -15,10 +16,6 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-
-import type { ProjectStatus } from "@prisma/client";
-
-import type { Roadmap } from "@prisma/client";
 
 type RoadmapDetailsEditorProps = {
   id: string;

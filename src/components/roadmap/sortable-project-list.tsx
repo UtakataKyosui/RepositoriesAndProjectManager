@@ -18,12 +18,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { RoadmapProject } from "@prisma/client";
 import { GripVertical } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { reorderRoadmapProjects } from "@/actions/roadmap";
 import { Button } from "@/components/ui/button";
-
-import type { RoadmapProject } from "@prisma/client";
 
 type SortableProject = Pick<RoadmapProject, "projectId"> & {
   title: string;

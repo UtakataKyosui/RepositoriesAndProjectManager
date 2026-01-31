@@ -15,12 +15,12 @@ import {
 import type React from "react";
 import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
+
+import type { ProjectStatus } from "@prisma/client";
 import ELK from "elkjs/lib/elk.bundled.js";
 import { Box } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import type { ProjectStatus } from "@prisma/client";
 
 type DependencyGraphProps = {
   currentProject: {

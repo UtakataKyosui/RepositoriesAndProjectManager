@@ -18,6 +18,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { RoadmapGoal } from "@prisma/client";
 import {
   Check,
   CheckCircle2,
@@ -40,8 +41,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-import type { RoadmapGoal } from "@prisma/client";
 
 type GoalManagerProps = {
   roadmapId: string;

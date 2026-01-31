@@ -3,8 +3,6 @@ import { ProjectCard } from "@/components/project/project-card";
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import prisma from "@/lib/db/prisma";
-import { formatRepositoryName } from "@/lib/utils";
-import type { Project, Repository } from "@prisma/client";
 import type { ProjectWithRepositories } from "@/types/project";
 
 // ビルド時ではなくリクエスト時にデータベースアクセスする（Vercelビルド環境からDB接続できないため）

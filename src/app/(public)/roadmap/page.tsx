@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { getPublicRoadmaps } from "@/actions/roadmap";
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";

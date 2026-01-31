@@ -1,5 +1,6 @@
 "use client";
 
+import type { Project } from "@prisma/client";
 import { Loader2, Plus, Settings, Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import {
@@ -17,8 +18,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import type { Project } from "@prisma/client";
 
 type ManageProjectsDialogProps = {
   roadmapId: string;

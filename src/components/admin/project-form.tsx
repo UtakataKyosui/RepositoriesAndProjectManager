@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { ProjectStatus } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -30,8 +31,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-
-import type { ProjectStatus } from "@prisma/client";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -267,9 +266,7 @@ export function ProjectForm({ projectId, initialData }: ProjectFormProps = {}) {
                   <SelectItem value="DONE">Done</SelectItem>
                 </SelectContent>
               </Select>
-              <FormDescription>
-                Current status of this project.
-              </FormDescription>
+              <FormDescription>Current status of this project.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
