@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { signOut } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import { authClient } from "@/lib/auth/client";
 import SignInButton from "./sign-in-button";
 
 export default function UserButton() {
+  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
 
   if (isPending)
@@ -32,7 +33,14 @@ export default function UserButton() {
 
   const handleSignOut = async (e: Event) => {
     e.preventDefault();
-    await signOut();
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+          router.refresh();
+        },
+      },
+    });
   };
 
   return (

@@ -26,6 +26,8 @@ export async function signOut() {
 }
 
 export async function signInWithGithub() {
+  let url: string | undefined;
+
   try {
     const data = await auth.api.signInSocial({
       body: {
@@ -34,12 +36,13 @@ export async function signInWithGithub() {
       },
       headers: await headers(),
     });
-
-    if (data?.url) {
-      redirect(data.url);
-    }
+    url = data?.url ?? undefined;
   } catch (error) {
     console.error("Sign in error:", error);
-    throw error; // サインインエラーは呼び出し元に通知するべきか、あるいはエラーページへ？
+    throw error;
+  }
+
+  if (url) {
+    redirect(url);
   }
 }
