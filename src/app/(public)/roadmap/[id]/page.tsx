@@ -76,6 +76,14 @@ export default async function RoadmapDetailPage({
                   order: p.order,
                   description: p.project.description,
                 }))}
+                goals={roadmap.goals
+                  .sort((a, b) => a.order - b.order)
+                  .map((g) => ({
+                    id: g.id,
+                    content: g.content,
+                    order: g.order,
+                    isCompleted: g.isCompleted,
+                  }))}
               />
             </CardContent>
           </Card>
