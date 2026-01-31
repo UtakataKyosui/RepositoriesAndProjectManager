@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import prisma from "@/lib/db/prisma";
 import { env } from "@/lib/env";
+import { shouldBlockLogin } from "./check-allowlist";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -16,4 +17,15 @@ export const auth = betterAuth({
     },
   },
   plugins: [nextCookies()],
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          if (shouldBlockLogin(user.email, env.ADMIN_EMAIL)) {
+            return false;
+          }
+        },
+      },
+    },
+  },
 });
