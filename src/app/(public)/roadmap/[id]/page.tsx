@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { getRoadmap } from "@/actions/roadmap";
+import { getPublicRoadmap } from "@/actions/roadmap";
 import { RoadmapGoalsList } from "@/components/roadmap/roadmap-goals-list";
 import { RoadmapGraphSection } from "@/components/roadmap/roadmap-graph-section";
 import { RoadmapHeader } from "@/components/roadmap/roadmap-header";
@@ -12,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const roadmap = await getRoadmap(id);
+  const roadmap = await getPublicRoadmap(id);
 
   if (!roadmap) {
     return {
@@ -33,7 +33,7 @@ export default async function RoadmapDetailPage({
 }) {
   await connection();
   const { id } = await params;
-  const roadmap = await getRoadmap(id);
+  const roadmap = await getPublicRoadmap(id);
 
   if (!roadmap) {
     notFound();

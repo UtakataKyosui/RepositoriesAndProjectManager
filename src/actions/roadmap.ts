@@ -47,6 +47,7 @@ export async function getMyRoadmaps() {
 
 export async function getPublicRoadmaps() {
   return await prisma.roadmap.findMany({
+    where: { published: true },
     orderBy: { updatedAt: "desc" },
     include: {
       projects: {
@@ -55,6 +56,22 @@ export async function getPublicRoadmaps() {
         },
       },
       goals: true,
+    },
+  });
+}
+
+export async function getPublicRoadmap(id: string) {
+  return await prisma.roadmap.findUnique({
+    where: { id, published: true },
+    include: {
+      projects: {
+        include: {
+          project: true,
+        },
+      },
+      goals: {
+        orderBy: { order: "asc" },
+      },
     },
   });
 }
