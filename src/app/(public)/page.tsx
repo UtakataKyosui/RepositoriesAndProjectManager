@@ -1,4 +1,3 @@
-import type { Project, Repository } from "@prisma/client";
 import { Github } from "lucide-react";
 import Link from "next/link";
 import { getPublicRoadmaps } from "@/actions/roadmap";
@@ -13,10 +12,10 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/db/prisma";
 import { formatRepositoryName } from "@/lib/utils";
-
-type ProjectWithRepositories = Project & { repositories: Repository[] };
+import type { Project, Repository } from "@/lib/zod";
+import type { ProjectWithRepositories } from "@/types/project";
 
 // ビルド時ではなくリクエスト時にデータベースアクセスする（Vercelビルド環境からDB接続できないため）
 

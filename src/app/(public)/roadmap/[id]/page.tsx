@@ -1,11 +1,10 @@
-import { Check, Circle } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { getRoadmap } from "@/actions/roadmap";
-import { RoadmapGraphWrapper } from "@/components/roadmap/roadmap-graph-wrapper";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { RoadmapGoalsList } from "@/components/roadmap/roadmap-goals-list";
+import { RoadmapGraphSection } from "@/components/roadmap/roadmap-graph-section";
+import { RoadmapHeader } from "@/components/roadmap/roadmap-header";
 
 export async function generateMetadata({
   params,
@@ -48,85 +47,18 @@ export default async function RoadmapDetailPage({
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       <main className="flex-1 container mx-auto px-4 py-8 flex flex-col gap-6">
-        <div className="flex justify-between items-start">
-          <div className="flex-1 mr-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                {roadmap.title}
-              </h1>
-              {roadmap.description && (
-                <p className="text-muted-foreground mt-2">
-                  {roadmap.description}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
+        <RoadmapHeader
+          title={roadmap.title}
+          description={roadmap.description}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-          <Card className="lg:col-span-2 flex flex-col">
-            <CardHeader>
-              <CardTitle>Roadmap Graph</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 min-h-[500px] bg-muted/10 rounded-md p-0 overflow-hidden relative">
-              <RoadmapGraphWrapper
-                projects={sortedProjects.map((p) => ({
-                  id: p.project.id,
-                  title: p.project.title,
-                  order: p.order,
-                  description: p.project.description,
-                }))}
-                goals={roadmap.goals
-                  .sort((a, b) => a.order - b.order)
-                  .map((g) => ({
-                    id: g.id,
-                    content: g.content,
-                    order: g.order,
-                    isCompleted: g.isCompleted,
-                  }))}
-              />
-            </CardContent>
-          </Card>
+          <RoadmapGraphSection
+            projects={sortedProjects}
+            goals={roadmap.goals}
+          />
 
-          <div className="space-y-6">
-            <Card className="h-fit">
-              <CardHeader>
-                <CardTitle>Goals</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {roadmap.goals
-                    .sort((a, b) => a.order - b.order)
-                    .map((goal) => (
-                      <div
-                        key={goal.id}
-                        className="flex items-start gap-2 p-3 border rounded-md"
-                      >
-                        {goal.isCompleted ? (
-                          <Check className="h-5 w-5 text-green-500 mt-0.5" />
-                        ) : (
-                          <Circle className="h-5 w-5 text-muted-foreground mt-0.5" />
-                        )}
-                        <span
-                          className={
-                            goal.isCompleted
-                              ? "line-through text-muted-foreground"
-                              : ""
-                          }
-                        >
-                          {goal.content}
-                        </span>
-                      </div>
-                    ))}
-                  {roadmap.goals.length === 0 && (
-                    <div className="text-center text-muted-foreground py-4">
-                      No goals defined.
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <RoadmapGoalsList goals={roadmap.goals} />
         </div>
       </main>
     </div>

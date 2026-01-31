@@ -41,16 +41,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-type Goal = {
-  id: string;
-  content: string;
-  isCompleted: boolean;
-  order: number;
-};
+import type { RoadmapGoal } from "@/lib/zod";
 
 type GoalManagerProps = {
   roadmapId: string;
-  goals: Goal[];
+  goals: RoadmapGoal[];
   isOwner: boolean;
 };
 
@@ -62,7 +57,7 @@ function SortableGoalItem({
   onToggle,
   onUpdate,
 }: {
-  goal: Goal;
+  goal: RoadmapGoal;
   isOwner: boolean;
   onDelete: (id: string) => void;
   onToggle: (id: string, checked: boolean) => void;

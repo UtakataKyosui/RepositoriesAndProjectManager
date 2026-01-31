@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { ProjectForm } from "@/components/admin/project-form";
-import prisma from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { getSession } from "@/lib/auth/session";
+import prisma from "@/lib/db/prisma";
 
 type PageProps = {
   params: Promise<{ id: string }>;

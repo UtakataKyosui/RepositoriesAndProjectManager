@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { connection } from "next/server";
 import { getMyRoadmaps } from "@/actions/roadmap";
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";
-import { getSession } from "@/lib/session";
+import { getSession } from "@/lib/auth/session";
 
 // ビルド時ではなくリクエスト時にデータベースアクセスする
 

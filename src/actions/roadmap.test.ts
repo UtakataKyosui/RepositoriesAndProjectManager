@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import prisma from "@/lib/prisma";
-import * as sessionLib from "@/lib/session";
+import * as sessionLib from "@/lib/auth/session";
+import prisma from "@/lib/db/prisma";
 import {
   addProjectToRoadmap,
   addRoadmapGoal,

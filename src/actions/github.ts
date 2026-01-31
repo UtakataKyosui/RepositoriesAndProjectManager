@@ -1,7 +1,7 @@
 "use server";
 
-import prisma from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { getSession } from "@/lib/auth/session";
+import prisma from "@/lib/db/prisma";
 
 export type GitHubRepo = {
   id: number;

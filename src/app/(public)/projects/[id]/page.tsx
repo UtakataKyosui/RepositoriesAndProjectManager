@@ -22,9 +22,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import prisma from "@/lib/prisma";
+import { getProjectByRepo } from "@/lib/api/vercel";
+import prisma from "@/lib/db/prisma";
 import { formatRepositoryName } from "@/lib/utils";
-import { getProjectByRepo } from "@/lib/vercel";
 
 type PageProps = {
   params: Promise<{ id: string }>;

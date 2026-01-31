@@ -20,6 +20,8 @@ import ELK from "elkjs/lib/elk.bundled.js";
 import { Box, Check, Circle, Flag } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import type { RoadmapGoal } from "@/lib/zod";
+
 // Project Node logic
 type RoadmapGraphProps = {
   projects: {
@@ -28,12 +30,7 @@ type RoadmapGraphProps = {
     order: number;
     description: string | null;
   }[];
-  goals: {
-    id: string;
-    content: string;
-    order: number;
-    isCompleted: boolean;
-  }[];
+  goals: RoadmapGoal[];
 };
 
 const nodeWidth = 200;

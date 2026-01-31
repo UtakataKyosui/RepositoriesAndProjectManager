@@ -18,10 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-type Project = {
-  id: string;
-  title: string;
-};
+import type { Project } from "@/lib/zod";
 
 type ManageProjectsDialogProps = {
   roadmapId: string;

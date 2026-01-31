@@ -6,8 +6,8 @@ import { CreateRoadmapDialog } from "@/components/roadmap/create-roadmap-dialog"
 import { RoadmapCard } from "@/components/roadmap/roadmap-card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import prisma from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { getSession } from "@/lib/auth/session";
+import prisma from "@/lib/db/prisma";
 
 export default async function AdminDashboard() {
   await connection();

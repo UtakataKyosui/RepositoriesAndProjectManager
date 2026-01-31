@@ -23,16 +23,15 @@ import { useEffect, useState, useTransition } from "react";
 import { reorderRoadmapProjects } from "@/actions/roadmap";
 import { Button } from "@/components/ui/button";
 
-type Project = {
-  projectId: string; // The ID in the roadmapProject join table or project table?
-  // Actually, we reorder based on projectId in the join table relation: roadmapId_projectId
-  // Wait, reorderRoadmapProjects takes projectIds (the ID of the project itself).
+import type { RoadmapProject } from "@/lib/zod";
+
+type SortableProject = Pick<RoadmapProject, "projectId"> & {
   title: string;
 };
 
 type SortableProjectListProps = {
   roadmapId: string;
-  projects: Project[];
+  projects: SortableProject[];
 };
 
 function SortableItem({ id, title }: { id: string; title: string }) {

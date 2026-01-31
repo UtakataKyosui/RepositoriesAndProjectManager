@@ -9,15 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import type { RoadmapWithRelations } from "@/types/roadmap";
+
 type RoadmapCardProps = {
-  roadmap: {
-    id: string;
-    title: string;
-    description: string | null;
-    updatedAt: Date;
-    projects: { project: { title: string } }[];
-    goals: { id: string }[];
-  };
+  roadmap: RoadmapWithRelations;
 };
 
 export function RoadmapCard({

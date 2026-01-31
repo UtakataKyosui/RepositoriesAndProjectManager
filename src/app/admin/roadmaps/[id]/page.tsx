@@ -4,10 +4,10 @@ import { getRoadmap } from "@/actions/roadmap";
 import { GoalManager } from "@/components/roadmap/goal-manager";
 import { ManageProjectsDialog } from "@/components/roadmap/manage-projects-dialog";
 import { RoadmapDetailsEditor } from "@/components/roadmap/roadmap-details-editor";
-import { RoadmapGraphWrapper } from "@/components/roadmap/roadmap-graph-wrapper";
+import { RoadmapGraphSection } from "@/components/roadmap/roadmap-graph-section";
 import { SortableProjectList } from "@/components/roadmap/sortable-project-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSession } from "@/lib/session";
+import { getSession } from "@/lib/auth/session";
 
 export default async function AdminRoadmapDetailPage({
   params,
@@ -62,21 +62,10 @@ export default async function AdminRoadmapDetailPage({
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1">
-          <Card className="lg:col-span-2 flex flex-col">
-            <CardHeader>
-              <CardTitle>Roadmap Graph</CardTitle>
-            </CardHeader>
-            <CardContent className="flex-1 min-h-[500px] bg-muted/10 rounded-md p-0 overflow-hidden relative">
-              <RoadmapGraphWrapper
-                projects={sortedProjects.map((p) => ({
-                  id: p.project.id,
-                  title: p.project.title,
-                  order: p.order,
-                  description: p.project.description,
-                }))}
-              />
-            </CardContent>
-          </Card>
+          <RoadmapGraphSection
+            projects={sortedProjects}
+            goals={roadmap.goals}
+          />
 
           <div className="space-y-6">
             <Card className="h-fit">

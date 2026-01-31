@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import prisma from "@/lib/prisma";
-import { getSession } from "@/lib/session";
+import { getSession } from "@/lib/auth/session";
+import prisma from "@/lib/db/prisma";
 
 export async function createRoadmap(data: {
   title: string;

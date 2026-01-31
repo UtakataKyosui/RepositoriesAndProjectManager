@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+import type { Roadmap } from "@/lib/zod";
+
 type RoadmapDetailsEditorProps = {
   id: string;
-  initialTitle: string;
-  initialDescription: string | null;
+  initialTitle: Roadmap["title"];
+  initialDescription: Roadmap["description"];
   isOwner: boolean;
 };
 
